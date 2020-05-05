@@ -9,6 +9,7 @@ import org.neo4j.ogm.annotation.Relationship;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 
 import java.net.URL;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -119,9 +120,13 @@ public class Album extends Entity {
     }
 
     public void setReleaseYear(int releaseYear) {
+        if (releaseYear > Calendar.getInstance().get(Calendar.YEAR))
+            throw new IllegalArgumentException("Year invalid");
+        else if (releaseYear < 0)
+            throw new IllegalArgumentException("Year Cannot be negative");
         this.releaseYear = releaseYear;
-    }
 
+    }
     public String getAlbumName() {
         return albumName;
     }
@@ -132,6 +137,7 @@ public class Album extends Entity {
 
         this.albumName = albumName;
     }
+
 
     @Override
     public boolean equals(Object o) {
