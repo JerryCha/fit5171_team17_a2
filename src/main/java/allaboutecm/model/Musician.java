@@ -32,6 +32,7 @@ public class Musician extends Entity {
     }
 
     public Musician(String name) {
+        checkName(name);
         this.name = name;
         this.musicianUrl = null;
 
@@ -47,6 +48,7 @@ public class Musician extends Entity {
     }
 
     public void setAlbums(Set<Album> albums) {
+        checkAlbums(albums);
         this.albums = albums;
     }
 
@@ -69,5 +71,19 @@ public class Musician extends Entity {
 
     public void setMusicianUrl(URL musicianUrl) {
         this.musicianUrl = musicianUrl;
+    }
+
+    private void checkName(String name) {
+        if (name == null)
+            throw new IllegalArgumentException("Name cannot be null");
+        else if (name.equals(""))
+            throw new IllegalArgumentException("Name cannot be empty");
+    }
+
+    private void checkAlbums(Set<Album> albums) {
+        if (albums == null)
+            throw new IllegalArgumentException("Albums cannot be null");
+        else if (albums.size() == 0)
+            throw new IllegalArgumentException("Albums cannot be empty");
     }
 }
