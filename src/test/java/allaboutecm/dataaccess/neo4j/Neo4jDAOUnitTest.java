@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -150,4 +151,24 @@ class Neo4jDAOUnitTest {
     /**
      * Delete a musician and all their albums
      */
+    @Test
+    public void successfulDeleteMusicianInformation() throws MalformedURLException {
+        //assertEquals(0, dao.loadAll(Musician.class).size());
+
+        Musician musician = new Musician("Keith Jarrett");
+        musician.setMusicianUrl(new URL("https://www.keithjarrett.org/"));
+        musician.setAlbums(Collections.singleton(new Album(1975, "ECM 1064/65", "The Köln Concert")));
+
+        //dao.findMusicianByName("Keith Jarrett");
+        dao.createOrUpdate(musician);
+        Musician testMusician = dao.load(Musician.class, musician.getId());
+
+        musician.setAlbums(null);
+        assertEquals(null ,testMusician.getAlbums()); //delete the Album under the musician
+
+        dao.delete(testMusician);
+        assertEquals(0, dao.loadAll(Musician.class).size()); //delete the musician in dao
+
+
+    }
 }
