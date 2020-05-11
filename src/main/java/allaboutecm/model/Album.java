@@ -38,6 +38,9 @@ public class Album extends Entity {
     @Property(name = "sales")
     private int sales;
 
+    @Property(name = "rating")
+    private int rating;
+
     /**
      * CHANGE: instead of a set, now featuredMusicians is a list,
      * to better represent the order in which musicians are featured in an album.
@@ -143,7 +146,8 @@ public class Album extends Entity {
 
         this.albumName = albumName;
     }
-    
+
+    // Extension
     public int getSales() {
         return sales;
     }
@@ -154,7 +158,18 @@ public class Album extends Entity {
             throw new IllegalArgumentException("sales cannot be under 0");
         this.sales = sales;
     }
-    
+
+    public double getRating() {
+        return rating;
+    }
+
+    //  rating: 1-5
+    public void setRating(int rating) {
+        if (rating < 1 || rating > 5)
+            throw new IllegalArgumentException("Rating should between 1 and 5");
+        this.rating = rating;
+    }
+
     public void delete() {
         this.albumName = null;
         this.albumURL =null;

@@ -73,7 +73,8 @@ class AlbumUnitTest {
     }
     /**
      * Testing Album.
-     * Album record number shall not be empty*/
+     * Album record number shall not be empty
+     */
 
     @Test
     @DisplayName("Record number cannot be empty")
@@ -94,5 +95,24 @@ class AlbumUnitTest {
     public void shouldSetSalesIfGivenSalesOfOne() {
         album.setSales(1);
         assertEquals(1, album.getSales());
+    }
+
+    /**
+     * Testing Album rating
+     */
+    @Test
+    public void ratingCannotBeGreaterThanFive() {
+        assertThrows(IllegalArgumentException.class, () -> album.setRating(0));
+    }
+
+    @Test
+    public void ratingCannotBeSmallerThanOne() {
+        assertThrows(IllegalArgumentException.class, () -> album.setRating(6));
+    }
+
+    @Test
+    public void shouldSetRatingIfGivenValueBetweenOneAndFive() {
+        album.setRating(3);
+        assertEquals(3, album.getRating());
     }
 }
