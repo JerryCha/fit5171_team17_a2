@@ -125,4 +125,25 @@ public class ECMMiner {
     public List<Album> mostSimilarAlbums(int k, Album album) {
         return Lists.newArrayList();
     }
+
+    /**
+     * TODO: The best-selling k albums in the history
+     */
+    public List<Album> bestKSellingAlbums(int k) {
+        return Lists.newArrayList();
+    }
+
+    /**
+     * TODO: The k highest rated albums
+     */
+    public List<Album> topKRatedAlbums(int k) {
+        return Lists.newArrayList();
+    }
+
+    /**
+     * TODO: The k highest rated musicians
+     */
+    public List<Album> topKRatedMusicians(int k) {
+        return Lists.newArrayList();
+    }
 }
