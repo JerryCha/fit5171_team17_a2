@@ -10,6 +10,10 @@ import org.neo4j.ogm.annotation.typeconversion.Convert;
 import java.net.URL;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
 
 /**
  * An artist that has been featured in (at least) one ECM record.
@@ -32,7 +36,7 @@ public class Musician extends Entity {
     }
 
     public Musician(String name) {
-        checkName(name);
+
         this.name = name;
         this.musicianUrl = null;
 
@@ -41,6 +45,12 @@ public class Musician extends Entity {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        checkName(name);             //the name can not be be null or empty
+        this.name = name;
+
     }
 
     public Set<Album> getAlbums() {

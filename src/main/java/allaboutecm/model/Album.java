@@ -119,6 +119,7 @@ public class Album extends Entity {
         this.tracks = tracks;
     }
 
+
     public int getReleaseYear() {
         return releaseYear;
     }
@@ -135,13 +136,14 @@ public class Album extends Entity {
         return albumName;
     }
 
+
     public void setAlbumName(String albumName) {
         notNull(albumName);
         notBlank(albumName);
 
         this.albumName = albumName;
     }
-
+    
     public int getSales() {
         return sales;
     }
@@ -151,6 +153,12 @@ public class Album extends Entity {
         if (sales < 0)
             throw new IllegalArgumentException("sales cannot be under 0");
         this.sales = sales;
+    }
+    
+    public void delete() {
+        this.albumName = null;
+        this.albumURL =null;
+
     }
 
     @Override
