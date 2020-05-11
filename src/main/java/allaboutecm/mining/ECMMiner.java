@@ -141,6 +141,8 @@ public class ECMMiner {
      */
 
     public List<Integer> busiestYears(int k) {
+        Collection<Album> albums = dao.loadAll(Album.class);
+
         return Lists.newArrayList();
     }
 
@@ -174,7 +176,27 @@ public class ECMMiner {
     /**
      * TODO: The k highest rated musicians
      */
-    public List<Album> topKRatedMusicians(int k) {
-        return Lists.newArrayList();
+    public List<Musician> topKRatedMusicians(int k) {
+        Collection<Musician> musicians = dao.loadAll(Musician.class);
+        ArrayList<Musician> clonedMusician = new ArrayList<>(musicians);
+        ArrayList<Musician> answer = new ArrayList<>();
+        int iterator = 0;
+        do {
+            int highestRating = 0;
+            for (Musician musician : clonedMusician) {
+                if(musician.getRating() > highestRating) {
+                    highestRating = musician.getRating();
+                }
+            }
+            for(Musician musician : clonedMusician){
+                if(musician.getRating() == highestRating){
+                    answer.add(musician);
+                    clonedMusician.remove(musician);
+                    iterator++;
+                }
+            }
+        }
+        while(k > iterator);
+        return answer;
     }
 }
