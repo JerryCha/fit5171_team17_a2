@@ -82,6 +82,17 @@ class AlbumUnitTest {
 
     }
 
+    /**
+     * Testing Album sales.
+     */
+    @Test
+    public void salesCannotBeSmallerThanZero() {
+        assertThrows(IllegalArgumentException.class, () -> album.setSales(-1));
+    }
 
-
+    @Test
+    public void shouldSetSalesIfGivenSalesOfOne() {
+        album.setSales(1);
+        assertEquals(1, album.getSales());
+    }
 }

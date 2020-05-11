@@ -34,6 +34,10 @@ public class Album extends Entity {
     @Property(name="albumName")
     private String albumName;
 
+    //  extension of feature
+    @Property(name = "sales")
+    private int sales;
+
     /**
      * CHANGE: instead of a set, now featuredMusicians is a list,
      * to better represent the order in which musicians are featured in an album.
@@ -139,14 +143,23 @@ public class Album extends Entity {
 
         this.albumName = albumName;
     }
+    
+    public int getSales() {
+        return sales;
+    }
 
+    public void setSales(int sales) {
+        // TODO: Sales check: should greater than or equal to 0
+        if (sales < 0)
+            throw new IllegalArgumentException("sales cannot be under 0");
+        this.sales = sales;
+    }
+    
     public void delete() {
-
         this.albumName = null;
         this.albumURL =null;
 
     }
-
 
     @Override
     public boolean equals(Object o) {
