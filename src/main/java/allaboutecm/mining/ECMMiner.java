@@ -7,10 +7,7 @@ import com.google.common.collect.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * TODO: implement and test the methods in this class.
@@ -100,7 +97,41 @@ public class ECMMiner {
      */
 
     public List<Musician> mostSocialMusicians(int k) {
-        return Lists.newArrayList();
+        Collection<Album> albums = dao.loadAll(Album.class);
+        ArrayList<Musician> socialMusician = new ArrayList<>();
+        ArrayList<Integer> counterArray = new ArrayList<>();
+        for(Album album : albums){
+            if (album.getFeaturedMusicians().size() > 1){
+                for (Musician musician: album.getFeaturedMusicians()){
+                    if (!socialMusician.contains(musician)) {
+                        socialMusician.add(musician);
+                    }
+                    int index = socialMusician.indexOf(musician);
+                    if(counterArray.get(index) == null){
+                        counterArray.add(index,0);
+                    }
+                    counterArray.add(index,counterArray.get(index) + 1);
+                }
+            }
+        }
+        ArrayList<Musician> answer = new ArrayList<>();
+        int iterator = 0;
+        do {
+            int highest = 0;
+            for(int musNumber : counterArray) {
+                if (musNumber > highest) {
+                    highest = musNumber;
+                }
+            }
+            for(int counterValue: counterArray) {
+                if(counterValue == highest) {
+                    answer.add(socialMusician.get(counterValue));
+                    iterator++;
+                }
+            }
+        }
+        while(k > iterator);
+        return answer;
     }
 
     /**
