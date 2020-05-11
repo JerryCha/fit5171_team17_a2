@@ -126,26 +126,127 @@ class Neo4jDAOUnitTest {
     /**
      * Read of Album of a musician
      */
+    @Test
+    public void successfulReadOfAlbumOfMusician() throws MalformedURLException {
+        Musician musician = new Musician("Keith Jarrett");
+        musician.setMusicianUrl(new URL("https://www.keithjarrett.org/"));
+
+        Album album = new Album(1975, "ECM 1064/65", "The Köln Concert");
+        musician.setAlbums(Sets.newHashSet(album));
+
+        dao.createOrUpdate(album);
+        dao.createOrUpdate(musician);
+
+        Collection<Musician> musicians = dao.loadAll(Musician.class); //collection of the musicians
+        assertEquals(1, musicians.size());             //only one musician in musicians collection
+        Musician loadedMusician = musicians.iterator().next();
+
+        assertEquals(musician, loadedMusician);
+        assertEquals(musician.getMusicianUrl(), loadedMusician.getMusicianUrl());
+        assertEquals(musician.getAlbums(), loadedMusician.getAlbums());     //get the albums from the musician
+        assertEquals(album.getReleaseYear(), loadedMusician.getAlbums().iterator().next().getReleaseYear());
+        assertEquals(album.getAlbumName(), loadedMusician.getAlbums().iterator().next().getAlbumName());
+        assertEquals(album.getRecordNumber(), loadedMusician.getAlbums().iterator().next().getRecordNumber());
+        assertEquals(album.getFeaturedMusicians(),loadedMusician.getAlbums().iterator().next().getFeaturedMusicians());
+        assertEquals(album.getAlbumURL(),loadedMusician.getAlbums().iterator().next().getAlbumURL());
+        assertEquals(album.getInstruments(),loadedMusician.getAlbums().iterator().next().getInstruments());
+        assertEquals(album.getTracks(),loadedMusician.getAlbums().iterator().next().getTracks());
+
+    }
 
 
     /**
      * Read of Musician
      */
+    @Test
+    public void successfulReadOfMusician() throws MalformedURLException {
+        Musician musician = new Musician("Keith Jarrett");
+        musician.setMusicianUrl(new URL("https://www.keithjarrett.org/"));
 
+        dao.createOrUpdate(musician);
+
+        Collection<Musician> musicians = dao.loadAll(Musician.class); //collection of the musicians
+        assertEquals(1, musicians.size());             //only one musician in musicians collection
+        Musician loadedMusician = musicians.iterator().next();
+
+        assertEquals(musician, loadedMusician);
+        assertEquals(musician.getMusicianUrl(), loadedMusician.getMusicianUrl());
+        assertEquals(musician.getName(), loadedMusician.getName());     //get the albums from the musician
+        assertEquals(musician.getMusicianUrl(), loadedMusician.getMusicianUrl());     //get the albums from the musician
+    }
 
     /**
      * Update musician
      */
+    @Test
+    public void successfulUpdateMusician() throws MalformedURLException {
+        Musician musician = new Musician("Keith Jarrett");
+        musician.setMusicianUrl(new URL("https://www.keithjarrett.org/"));
+
+        dao.createOrUpdate(musician);
+
+        Collection<Musician> musicians = dao.loadAll(Musician.class); //collection of the musicians
+        assertEquals(1, musicians.size());             //only one musician in musicians collection
+        Musician loadedMusician = musicians.iterator().next();
+        assertEquals(musician, loadedMusician);  //ensure two objects are the same before update
+        loadedMusician.setName("Kelvin Jack");
+        assertEquals("Kelvin Jack",loadedMusician.getName());
+        loadedMusician.setMusicianUrl(new URL("https://www.keithJack.org/"));   //Set the new URL
+        assertEquals(new URL("https://www.keithJack.org/"), loadedMusician.getMusicianUrl());
+    }
 
 
     /**
-     * Update album∂
+     * Update album
      */
+    @Test
+    public void successfulUpdateAlbum() throws MalformedURLException {
+        Album album = new Album(1975, "ECM 1064/65", "The Köln Concert");
+
+        dao.createOrUpdate(album);
+
+        Collection<Album> Albums = dao.loadAll(Album.class); //collection of the musicians
+
+
+        Album loadedAlbum = Albums.iterator().next();
+        assertEquals(album, loadedAlbum);  //ensure two objects are the same before update
+
+        loadedAlbum.setAlbumName("The New Köln Concert");
+        assertEquals("The New Köln Concert",loadedAlbum.getAlbumName());
+
+        loadedAlbum.setRecordNumber("ECM 1064/66");
+        assertEquals("ECM 1064/66",loadedAlbum.getRecordNumber());
+
+        loadedAlbum.setReleaseYear(1976);
+        assertEquals(1976,loadedAlbum.getReleaseYear());
+
+
+    }
 
 
     /**
      * Delete album
      */
+    @Test
+    public void successfulDeleteAlbum() throws MalformedURLException {
+        Album album = new Album(1975, "ECM 1064/65", "The Köln Concert");
+
+        dao.createOrUpdate(album);
+
+        Collection<Album> Albums = dao.loadAll(Album.class); //collection of the musicians
+
+
+        Album loadedAlbum = Albums.iterator().next();
+
+        assertEquals(album, loadedAlbum);  //ensure two objects are the same before update
+        loadedAlbum.delete();
+
+        assertEquals(null, loadedAlbum.getAlbumName());
+        assertEquals(null, loadedAlbum.getAlbumURL());
+
+
+
+    }
 
 
     /**

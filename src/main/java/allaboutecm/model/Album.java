@@ -115,6 +115,7 @@ public class Album extends Entity {
         this.tracks = tracks;
     }
 
+
     public int getReleaseYear() {
         return releaseYear;
     }
@@ -131,11 +132,19 @@ public class Album extends Entity {
         return albumName;
     }
 
+
     public void setAlbumName(String albumName) {
         notNull(albumName);
         notBlank(albumName);
 
         this.albumName = albumName;
+    }
+
+    public void delete() {
+
+        this.albumName = null;
+        this.albumURL =null;
+
     }
 
 
