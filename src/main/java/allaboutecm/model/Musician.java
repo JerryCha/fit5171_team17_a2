@@ -25,6 +25,9 @@ public class Musician extends Entity {
     @Property(name="name")
     private String name;
 
+    @Property(name = "rating")
+    private int rating;
+
     @Convert(URLConverter.class)
     @Property(name="musicianURL")
     private URL musicianUrl;
@@ -83,6 +86,15 @@ public class Musician extends Entity {
         this.musicianUrl = musicianUrl;
     }
 
+    public void setRating(int rating) {
+        checkRating(rating);
+        this.rating = rating;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
     private void checkName(String name) {
         if (name == null)
             throw new IllegalArgumentException("Name cannot be null");
@@ -95,5 +107,10 @@ public class Musician extends Entity {
             throw new IllegalArgumentException("Albums cannot be null");
         else if (albums.size() == 0)
             throw new IllegalArgumentException("Albums cannot be empty");
+    }
+
+    private void checkRating(int rating) {
+        if (rating < 1 || rating > 5)
+            throw new IllegalArgumentException("Rating should between 1 and 5");
     }
 }

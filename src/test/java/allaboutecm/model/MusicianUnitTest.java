@@ -52,6 +52,25 @@ public class MusicianUnitTest {
         assertThrows(IllegalArgumentException.class, () -> musician.setAlbums(albums));
     }
 
+    /**
+     * Testing Musician rating
+     */
+    @Test
+    public void ratingCannotBeGreaterThanFive() {
+        assertThrows(IllegalArgumentException.class, () -> musician.setRating(0));
+    }
+
+    @Test
+    public void ratingCannotBeSmallerThanOne() {
+        assertThrows(IllegalArgumentException.class, () -> musician.setRating(6));
+    }
+
+    @Test
+    public void shouldSetRatingIfGivenValueBetweenOneAndFive() {
+        musician.setRating(3);
+        assertEquals(3, musician.getRating());
+    }
+
     @ParameterizedTest
     @CsvSource(value = {"'ECM2680','BIG VICIOUS',2020"})
     public void shouldBeSetIfGivenASetOfAlbumInSizeOne(String recordNumber, String albumName, int releaseYear) {
