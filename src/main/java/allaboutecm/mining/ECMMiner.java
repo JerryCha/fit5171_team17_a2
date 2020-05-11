@@ -170,7 +170,30 @@ public class ECMMiner {
      * TODO: The k highest rated albums
      */
     public List<Album> topKRatedAlbums(int k) {
-        return Lists.newArrayList();
+        Collection<Album> albums = dao.loadAll(Album.class);
+        ArrayList<Album> clonedAlbum = new ArrayList<>(albums);
+        ArrayList<Album> answer = new ArrayList<>();
+        if(k == 0){
+            return answer;
+        }
+        int iterator = 0;
+        do {
+            double highestRating = 0;
+            for (Album album : clonedAlbum) {
+                if(album.getRating() > highestRating) {
+                    highestRating = album.getRating();
+                }
+            }
+            for(Album album : clonedAlbum){
+                if(album.getRating() == highestRating){
+                    answer.add(album);
+                    clonedAlbum.remove(album);
+                    iterator++;
+                }
+            }
+        }
+        while(k > iterator);
+        return answer;  
     }
 
     /**
