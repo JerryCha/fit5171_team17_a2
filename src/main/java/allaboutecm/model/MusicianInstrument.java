@@ -50,6 +50,8 @@ public class MusicianInstrument extends Entity {
     }
 
     public void setMusician(Musician musician) {
+        if (musician == null)
+            throw new NullPointerException();
         this.musician = musician;
     }
 
@@ -58,6 +60,8 @@ public class MusicianInstrument extends Entity {
     }
 
     public void setMusicalInstruments(Set<MusicalInstrument> musicalInstruments) {
+        if (musicalInstruments == null)
+            throw new NullPointerException();
         this.musicalInstruments = musicalInstruments;
     }
 
