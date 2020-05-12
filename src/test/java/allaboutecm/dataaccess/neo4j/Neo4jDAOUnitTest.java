@@ -264,8 +264,8 @@ class Neo4jDAOUnitTest {
         dao.createOrUpdate(musician);
         Musician testMusician = dao.load(Musician.class, musician.getId());
 
-        musician.setAlbums(null);
-        assertEquals(null ,testMusician.getAlbums()); //delete the Album under the musician
+        musician.deleteAlbums();
+        assertEquals(0,testMusician.getAlbums().size()); //delete the Album under the musician
 
         dao.delete(testMusician);
         assertEquals(0, dao.loadAll(Musician.class).size()); //delete the musician in dao

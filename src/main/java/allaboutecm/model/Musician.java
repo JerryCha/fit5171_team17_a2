@@ -8,6 +8,7 @@ import org.neo4j.ogm.annotation.Relationship;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -63,6 +64,11 @@ public class Musician extends Entity {
     public void setAlbums(Set<Album> albums) {
         checkAlbums(albums);
         this.albums = albums;
+    }
+
+    public void deleteAlbums() {
+
+        this.albums = Collections.emptySet();
     }
 
     @Override
