@@ -1,11 +1,12 @@
 package allaboutecm.model;
 
+import com.google.common.collect.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import sun.invoke.empty.Empty;
+//import sun.invoke.empty.Empty;
 
 import javax.smartcardio.Card;
 
@@ -15,7 +16,7 @@ class MusicianInstrumentUnitTest {
     private MusicianInstrument musicianInstrument;
 
     @BeforeEach
-    public void setUp() {musicianInstrument= new MusicianInstrument(new Musician("kelvin"), new MusicalInstrument("Piano")); }
+    public void setUp() {musicianInstrument= new MusicianInstrument(new Musician("kelvin"), Sets.newHashSet(new MusicalInstrument("Piano"))); }
 
 
     /**
@@ -35,7 +36,7 @@ class MusicianInstrumentUnitTest {
     @Test
     @DisplayName("musicalInstrumentCanNotBeNull")
     public void musicalInstrumentCannotBeNull() {
-        assertThrows(NullPointerException.class, () -> musicianInstrument.setMusicalInstrument(null));}
+        assertThrows(NullPointerException.class, () -> musicianInstrument.setMusicalInstruments(null));}
 
 
     /**
@@ -45,7 +46,7 @@ class MusicianInstrumentUnitTest {
     @Test
     @DisplayName("shouldSuccessInstateAMusicianInstrument")
     public void instateAMusicianInstrument() {
-        MusicianInstrument musicianInstrument1 =new MusicianInstrument(new Musician("kelvin"), new MusicalInstrument("Piano"));
+        MusicianInstrument musicianInstrument1 =new MusicianInstrument(new Musician("kelvin"), Sets.newHashSet(new MusicalInstrument("Piano")));
         assertEquals(musicianInstrument, musicianInstrument1);
     }
 
@@ -56,9 +57,9 @@ class MusicianInstrumentUnitTest {
     @Test
     @DisplayName("shouldReturnTrueIfGivenTheSameMusicianInstrumentOtherwiseReturnFalse")
     public void sameMusicianAndMusicalInstrumentSameMusicianInstrument() {
-        MusicianInstrument musicianInstrument1 =new MusicianInstrument(new Musician("kelvin"), new MusicalInstrument("Piano"));
-        MusicianInstrument musicianInstrument2 =new MusicianInstrument(new Musician("Jane"), new MusicalInstrument("Piano"));
-        MusicianInstrument musicianInstrument3 =new MusicianInstrument(new Musician("Jane"), new MusicalInstrument("Violin"));
+        MusicianInstrument musicianInstrument1 =new MusicianInstrument(new Musician("kelvin"), Sets.newHashSet(new MusicalInstrument("Piano")));
+        MusicianInstrument musicianInstrument2 =new MusicianInstrument(new Musician("Jane"), Sets.newHashSet(new MusicalInstrument("Piano")));
+        MusicianInstrument musicianInstrument3 =new MusicianInstrument(new Musician("Jane"), Sets.newHashSet(new MusicalInstrument("Violin")));
         assertEquals(musicianInstrument, musicianInstrument1);
         assertTrue(musicianInstrument.equals(musicianInstrument1));
         assertFalse(musicianInstrument.equals(musicianInstrument2));
@@ -72,7 +73,7 @@ class MusicianInstrumentUnitTest {
     @Test
     @DisplayName("shouldSuccessGetTheCorrectValueOfMusician")
     public void getSameValueOfMusician() { //test the getMusician() if it can get the correct value
-        MusicianInstrument musicianInstrument1 =new MusicianInstrument(new Musician("kelvin"), new MusicalInstrument("Piano"));
+        MusicianInstrument musicianInstrument1 =new MusicianInstrument(new Musician("kelvin"), Sets.newHashSet(new MusicalInstrument("Piano")));
         musicianInstrument1.setMusician(new Musician("Jane"));
         assertTrue(musicianInstrument1.getMusician().getName() == "Jane");
     }
@@ -84,9 +85,9 @@ class MusicianInstrumentUnitTest {
     @Test
     @DisplayName("shouldSuccessGetTheCorrectValueOfMusicalInstrument")
     public void getSameValueOfMusicalInstrument() {   //test the getMusicalInstrument() if it can get the correct value
-        MusicianInstrument musicianInstrument1 =new MusicianInstrument(new Musician("kelvin"), new MusicalInstrument("Violin"));
-        musicianInstrument1.setMusicalInstrument(new MusicalInstrument("Violin"));
-        assertTrue(musicianInstrument1.getMusicalInstrument().getName() == "Violin");
+        MusicianInstrument musicianInstrument1 =new MusicianInstrument(new Musician("kelvin"), Sets.newHashSet(new MusicalInstrument("Violin")));
+        musicianInstrument1.setMusicalInstruments(Sets.newHashSet(new MusicalInstrument("Violin")));
+        assertTrue(musicianInstrument1.getMusicalInstruments().iterator().next().getName() == "Violin");
     }
 
     /**
@@ -96,8 +97,8 @@ class MusicianInstrumentUnitTest {
     @Test
     @DisplayName("shouldSuccessGenerateToHashCode")
     public void hashCodeNotSame() {   //test the getMusicalInstrument() if it can get the correct value
-        MusicianInstrument musicianInstrument1 =new MusicianInstrument(new Musician("kelvin"), new MusicalInstrument("Violin"));
-        MusicianInstrument musicianInstrument2 =new MusicianInstrument(new Musician("Jame"), new MusicalInstrument("Piano"));
+        MusicianInstrument musicianInstrument1 =new MusicianInstrument(new Musician("kelvin"), Sets.newHashSet(new MusicalInstrument("Violin")));
+        MusicianInstrument musicianInstrument2 =new MusicianInstrument(new Musician("Jame"), Sets.newHashSet(new MusicalInstrument("Piano")));
         assertNotEquals(musicianInstrument1.hashCode(), musicianInstrument2.hashCode());
     }
 
