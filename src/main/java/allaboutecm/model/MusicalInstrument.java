@@ -12,6 +12,8 @@ public class MusicalInstrument extends Entity {
     }
 
     public MusicalInstrument(String name) {
+        checkName(name);
+        name = name.trim();
         this.name = name;
     }
 
@@ -20,7 +22,9 @@ public class MusicalInstrument extends Entity {
     }
 
     public void setName(String name) {
-        this.name = name;
+        checkName(name);
+        name = name.trim();
+        this.name = name.toLowerCase();
     }
 
     @Override
@@ -34,5 +38,12 @@ public class MusicalInstrument extends Entity {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    private void checkName(String name) {
+        if (name == null)
+            throw new IllegalArgumentException("name cannot be null");
+        else if (name.trim().equals(""))
+            throw new IllegalArgumentException("name cannot be empty");
     }
 }
