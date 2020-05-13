@@ -24,7 +24,7 @@ public class MusicalInstrument extends Entity {
     public void setName(String name) {
         checkName(name);
         name = name.trim();
-        this.name = name.toLowerCase();
+        this.name = name;
     }
 
     @Override
