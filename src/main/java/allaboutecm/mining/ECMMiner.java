@@ -142,8 +142,33 @@ public class ECMMiner {
 
     public List<Integer> busiestYears(int k) {
         Collection<Album> albums = dao.loadAll(Album.class);
-
-        return Lists.newArrayList();
+        ArrayList<Integer> listOfYears = new ArrayList<>();
+        ArrayList<Integer> yearCounter = new ArrayList<>();
+        for(Album album: albums){
+            if(listOfYears.contains(album.getReleaseYear())){
+                int index = listOfYears.indexOf(album.getReleaseYear());
+                yearCounter.add(index, yearCounter.get(index) + 1);
+            }else{
+                listOfYears.add(album.getReleaseYear());
+                yearCounter.add(1);
+            }
+        }
+        ArrayList<Integer> answer = new ArrayList<>();
+        while(k > 0){
+            int highestCount = 0;
+            for(Integer yearCount : yearCounter){
+                if(yearCount > highestCount){
+                    highestCount = yearCount;
+                }
+            }
+            for(Integer years : listOfYears){
+                if(listOfYears.indexOf(years) == yearCounter.indexOf(highestCount)){
+                    answer.add(years);
+                    k -=1;
+                }
+            }
+        }
+        return answer;
     }
 
     /**
