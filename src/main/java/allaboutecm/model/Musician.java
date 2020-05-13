@@ -40,8 +40,8 @@ public class Musician extends Entity {
     }
 
     public Musician(String name) {
-
-        this.name = name;
+        checkName(name);
+        this.name = name.trim();
         this.musicianUrl = null;
 
         albums = Sets.newHashSet();
@@ -53,7 +53,7 @@ public class Musician extends Entity {
 
     public void setName(String name) {
         checkName(name);             //the name can not be be null or empty
-        this.name = name;
+        this.name = name.trim();
 
     }
 
@@ -104,7 +104,7 @@ public class Musician extends Entity {
     private void checkName(String name) {
         if (name == null)
             throw new IllegalArgumentException("Name cannot be null");
-        else if (name.equals(""))
+        else if (name.trim().equals(""))
             throw new IllegalArgumentException("Name cannot be empty");
     }
 
