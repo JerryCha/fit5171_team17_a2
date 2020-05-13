@@ -188,7 +188,25 @@ public class ECMMiner {
      * TODO: The best-selling k albums in the history
      */
     public List<Album> bestKSellingAlbums(int k) {
-        return Lists.newArrayList();
+        Collection<Album> albums = dao.loadAll(Album.class);
+        ArrayList<Album> clonedAlbum = new ArrayList<>(albums);
+        ArrayList<Album> answer = new ArrayList<>();
+        while(k > 0) {
+            int highestSales = 0;
+            for (Album album : clonedAlbum) {
+                if (album.getSales() > highestSales) {
+                    highestSales = album.getSales();
+                }
+            }
+            for(Album album : clonedAlbum){
+                if(highestSales == album.getSales()){
+                    answer.add(album);
+                    clonedAlbum.remove(album);
+                    k--;
+                }
+            }
+        }
+        return answer;
     }
 
     /**
@@ -198,26 +216,21 @@ public class ECMMiner {
         Collection<Album> albums = dao.loadAll(Album.class);
         ArrayList<Album> clonedAlbum = new ArrayList<>(albums);
         ArrayList<Album> answer = new ArrayList<>();
-        if(k == 0){
-            return answer;
-        }
-        int iterator = 0;
-        do {
+        while(k > 0) {
             double highestRating = 0;
             for (Album album : clonedAlbum) {
-                if(album.getRating() > highestRating) {
+                if (album.getRating() > highestRating) {
                     highestRating = album.getRating();
                 }
             }
-            for(Album album : clonedAlbum){
-                if(album.getRating() == highestRating){
+            for (Album album : clonedAlbum) {
+                if (album.getRating() == highestRating) {
                     answer.add(album);
                     clonedAlbum.remove(album);
-                    iterator++;
+                    k--;
                 }
             }
         }
-        while(k > iterator);
         return answer;  
     }
 
@@ -245,6 +258,36 @@ public class ECMMiner {
             }
         }
         while(k > iterator);
+        return answer;
+    }
+
+    /**
+     * TODO: A musicians highest rated album (takes in musician name and number of albums to be returned(k))
+     */
+    public List<Album> musiciansHighestRatedAlbums(String musicianName, int k){
+        Collection<Album> albums = dao.loadAll(Album.class);
+        ArrayList<Album> musiciansAlbums = new ArrayList<>();
+        ArrayList<Album> answer = new ArrayList<>();
+        for(Album album : albums){
+            if(album.getFeaturedMusicians().contains(musicianName)){
+                musiciansAlbums.add(album);
+            }
+        }
+        while(k>0) {
+            double highestRating = 0;
+            for (Album musAlbum : musiciansAlbums) {
+                if (musAlbum.getRating() > highestRating) {
+                    highestRating = musAlbum.getRating();
+                }
+            }
+            for (Album musAlbum : musiciansAlbums) {
+                if (musAlbum.getRating() == highestRating) {
+                    answer.add(musAlbum);
+                    musiciansAlbums.remove(musAlbum);
+                    k--;
+                }
+            }
+        }
         return answer;
     }
 }
