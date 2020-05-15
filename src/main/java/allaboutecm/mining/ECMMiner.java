@@ -176,12 +176,36 @@ public class ECMMiner {
      * For example, it can be defined over the musicians in albums, the similarity between names
      * of the albums & tracks, etc.
      *
+     * Similarity is based on genre and musician of album. If artist is left empty it is ignored
+     *
      * @Param k the number of albums to be returned.
      * @Param album
      */
 
-    public List<Album> mostSimilarAlbums(int k, Album album) {
-        return Lists.newArrayList();
+    public List<Album> mostSimilarAlbums(int k, String genre, String musician) {
+        Collection<Album> albums = dao.loadAll(Album.class);
+        ArrayList<Album> answer = new ArrayList<>();
+        if(musician.length() == 0) {
+            while (k > 0) {
+                for (Album album : albums) {
+                    if (album.getGenre().equals(genre)) {
+                        answer.add(album);
+                        k--;
+                    }
+                }
+            }
+        }else{
+            while(k > 0){
+                for(Album album : albums){
+                    if(album.getGenre().equals(genre) && album.getFeaturedMusicians().contains(musician)){
+                        answer.add(album);
+                        k--;
+                    }
+                }
+            }
+        }
+
+        return answer;
     }
 
     /**
