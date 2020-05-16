@@ -6,9 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-//import sun.invoke.empty.Empty;
-
-import javax.smartcardio.Card;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,7 +13,9 @@ class MusicianInstrumentUnitTest {
     private MusicianInstrument musicianInstrument;
 
     @BeforeEach
-    public void setUp() {musicianInstrument= new MusicianInstrument(new Musician("kelvin"), Sets.newHashSet(new MusicalInstrument("Piano"))); }
+    public void setUp() {
+        musicianInstrument = new MusicianInstrument(new Musician("kelvin"), Sets.newHashSet(new MusicalInstrument("Piano")));
+    }
 
 
     /**
@@ -56,7 +55,7 @@ class MusicianInstrumentUnitTest {
     @Test
     @DisplayName("shouldSuccessInstateAMusicianInstrument")
     public void instateAMusicianInstrument() {
-        MusicianInstrument musicianInstrument1 =new MusicianInstrument(new Musician("kelvin"), Sets.newHashSet(new MusicalInstrument("Piano")));
+        MusicianInstrument musicianInstrument1 = new MusicianInstrument(new Musician("kelvin"), Sets.newHashSet(new MusicalInstrument("Piano")));
         assertEquals(musicianInstrument, musicianInstrument1);
     }
 
