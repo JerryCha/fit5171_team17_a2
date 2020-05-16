@@ -39,6 +39,7 @@ public class ECMMiner {
         ListMultimap<String, Album> multimap = MultimapBuilder.treeKeys().arrayListValues().build();
         ListMultimap<Integer, Musician> countMap = MultimapBuilder.treeKeys().arrayListValues().build();
 
+        // Categorize albums according to musician
         for (Musician musician : musicians) {
             Set<Album> albums = musician.getAlbums();
             for (Album album : albums) {
@@ -52,6 +53,7 @@ public class ECMMiner {
             }
         }
 
+        // Count the number of albums per musician
         Map<String, Collection<Album>> albumMultimap = multimap.asMap();
         for (String name : albumMultimap.keySet()) {
             Collection<Album> albums = albumMultimap.get(name);
@@ -59,6 +61,7 @@ public class ECMMiner {
             countMap.put(size, nameMap.get(name));
         }
 
+        // Sorting their number of albums
         List<Musician> result = Lists.newArrayList();
         List<Integer> sortedKeys = Lists.newArrayList(countMap.keySet());
         sortedKeys.sort(Ordering.natural().reverse());
@@ -101,20 +104,21 @@ public class ECMMiner {
         ArrayList<Musician> socialMusician = new ArrayList<>();
         ArrayList<Integer> counterArray = new ArrayList<>();
         for(Album album : albums){
-            if (album.getFeaturedMusicians().size() > 1){
+            if (album.getFeaturedMusicians().size() >= 1){
                 for (Musician musician: album.getFeaturedMusicians()){
                     if (!socialMusician.contains(musician)) {
                         socialMusician.add(musician);
                     }
                     int index = socialMusician.indexOf(musician);
-                    if(counterArray.get(index) == null){
+                    if(index > counterArray.size()-1){
                         counterArray.add(index,0);
                     }
-                    counterArray.add(index,counterArray.get(index) + 1);
+                    counterArray.set(index,counterArray.get(index) + 1);
                 }
             }
         }
         ArrayList<Musician> answer = new ArrayList<>();
+        // TODO: Fix top K algorithm
         int iterator = 0;
         do {
             int highest = 0;
@@ -125,12 +129,13 @@ public class ECMMiner {
             }
             for(int counterValue: counterArray) {
                 if(counterValue == highest) {
-                    answer.add(socialMusician.get(counterValue));
+                    answer.add(socialMusician.get(counterArray.indexOf(counterValue)));
                     iterator++;
                 }
             }
+            counterArray.remove(new Integer(highest));
         }
-        while(k > iterator);
+        while(k > iterator && counterArray.size() != 0);
         return answer;
     }
 
