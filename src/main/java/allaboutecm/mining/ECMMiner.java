@@ -118,7 +118,6 @@ public class ECMMiner {
             }
         }
         ArrayList<Musician> answer = new ArrayList<>();
-        // TODO: Fix top K algorithm
         int iterator = 0;
         do {
             int highest = 0;
