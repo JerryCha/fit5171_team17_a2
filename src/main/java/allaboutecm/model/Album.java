@@ -156,7 +156,7 @@ public class Album extends Entity {
     }
 
     public void setSales(int sales) {
-        // TODO: Sales check: should greater than or equal to 0
+        // Sales check: should greater than or equal to 0
         if (sales < 0)
             throw new IllegalArgumentException("sales cannot be under 0");
         this.sales = sales;
