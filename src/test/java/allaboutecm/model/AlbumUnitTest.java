@@ -115,4 +115,23 @@ class AlbumUnitTest {
         album.setRating(3);
         assertEquals(3, album.getRating());
     }
+
+    /**
+     * Testing Album genre
+     */
+    @Test
+    public void genreCannotBeNull() {
+        assertThrows(IllegalArgumentException.class, () -> album.setGenre(null));
+    }
+
+    @Test
+    public void genreCannotBeEmpty() {
+        assertThrows(IllegalArgumentException.class, () -> album.setGenre(""));
+    }
+
+    @Test
+    public void genreShouldBeSetIfGivenValidOne() {
+        album.setGenre("Jazz");
+        assertEquals("Jazz", album.getGenre());
+    }
 }

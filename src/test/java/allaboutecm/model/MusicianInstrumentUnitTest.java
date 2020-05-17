@@ -36,8 +36,18 @@ class MusicianInstrumentUnitTest {
     @Test
     @DisplayName("musicalInstrumentCanNotBeNull")
     public void musicalInstrumentCannotBeNull() {
-        assertThrows(NullPointerException.class, () -> musicianInstrument.setMusicalInstruments(null));}
+        assertThrows(NullPointerException.class, () -> musicianInstrument.setMusicalInstruments(null));
+    }
 
+    /**
+     * Testing musicalInstruments
+     * musicalInstruments cannot be empty
+     */
+    @Test
+    @DisplayName("musicalInstrumentsCannotBeEmpty")
+    public void musicalInstrumentsCannotBeEmpty() {
+        assertThrows(IllegalArgumentException.class, () -> musicianInstrument.setMusicalInstruments(Sets.newHashSet()));
+    }
 
     /**
      * Testing constructor.

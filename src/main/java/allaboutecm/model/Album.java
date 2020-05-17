@@ -41,6 +41,9 @@ public class Album extends Entity {
     @Property(name = "rating")
     private int rating;
 
+    @Property(name = "genre")
+    private String genre;
+
     /**
      * CHANGE: instead of a set, now featuredMusicians is a list,
      * to better represent the order in which musicians are featured in an album.
@@ -168,6 +171,19 @@ public class Album extends Entity {
         if (rating < 1 || rating > 5)
             throw new IllegalArgumentException("Rating should between 1 and 5");
         this.rating = rating;
+    }
+
+    // genre
+    public void setGenre(String genre) {
+        if (genre == null)
+            throw new IllegalArgumentException("Genre cannot be null");
+        else if (genre.trim().equals(""))
+            throw new IllegalArgumentException("Genre cannot be empty");
+        this.genre = genre.trim();
+    }
+
+    public String getGenre() {
+        return genre;
     }
 
     public void delete() {
