@@ -307,7 +307,14 @@ class ECMMinerUnitTest {
     @DisplayName("When mining the most prolific musicians the output can no be zero or less that zero")
     public void MiningTheMostProlificMusiciansKCanNotLessThanOrEqualToZero(int arg)
     {
-        assertThrows( IllegalArgumentException.class,()->ecmMiner.mostProlificMusicians(arg,-1,-1));
+         assertThrows( IllegalArgumentException.class,()-> ecmMiner.mostProlificMusicians(arg,-1,-1));
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {2009,2019})
+    @DisplayName("The end year should greater that start year")
+    public void theStartYearShouldBeEarlierThanTheEndYear(int argument)
+    {
+         assertThrows( IllegalArgumentException.class,()-> ecmMiner.mostProlificMusicians(1,argument,2008));
+    }
 }

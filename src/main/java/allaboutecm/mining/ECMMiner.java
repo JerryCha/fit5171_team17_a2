@@ -31,7 +31,9 @@ public class ECMMiner {
      */
     public List<Musician> mostProlificMusicians(int k, int startYear, int endYear) {
         if (k <= 0)
-            throw new IllegalArgumentException("the input number of k can not less than or equal to zero");
+            throw new IllegalArgumentException("The input number of k can not less than or equal to zero");
+        if (startYear > endYear)
+            throw new IllegalArgumentException("The end year should greater that start year");
         Collection<Musician> musicians = dao.loadAll(Musician.class);
         Map<String, Musician> nameMap = Maps.newHashMap();
         for (Musician m : musicians) {
