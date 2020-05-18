@@ -140,7 +140,7 @@ public class ECMMiner {
      * @Param k the number of years to be returned.
      */
 
-    public List<Integer> busiestYears(int k) {
+    /*public List<Integer> busiestYears(int k) {
         Collection<Album> albums = dao.loadAll(Album.class);
         ArrayList<Integer> listOfYears = new ArrayList<>();
         ArrayList<Integer> yearCounter = new ArrayList<>();
@@ -154,23 +154,51 @@ public class ECMMiner {
             }
         }
         ArrayList<Integer> answer = new ArrayList<>();
-        while(k > 0){
+        for(int i =0; i < k; i++){
             int highestCount = 0;
             for(Integer yearCount : yearCounter){
-                if(yearCount > highestCount){
+                if(yearCount > highestCount && !answer.contains(listOfYears.indexOf(yearCounter))){
                     highestCount = yearCount;
                 }
             }
             for(Integer years : listOfYears){
                 if(listOfYears.indexOf(years) == yearCounter.indexOf(highestCount)){
                     answer.add(years);
-                    k -=1;
+                }
+            }
+        }
+        return answer;
+    }*/
+    public List<Integer> busiestYears(int k) {
+        Collection<Album> albums = dao.loadAll(Album.class);
+        ArrayList<Album> album = new ArrayList<>(albums);
+        ArrayList<Integer> listOfYears = new ArrayList<>();
+        ArrayList<Integer> yearCounter = new ArrayList<>();
+        for(int i = 0; i < album.size(); i++){
+            if(listOfYears.contains(album.get(i).getReleaseYear())){
+                int index = listOfYears.indexOf(album.get(i).getReleaseYear());
+                yearCounter.add(index, yearCounter.get(index) + 1);
+            }else{
+                listOfYears.add(album.get(i).getReleaseYear());
+                yearCounter.add(1);
+            }
+        }
+        ArrayList<Integer> answer = new ArrayList<>();
+        for(int i = 0; i < k; i++){
+            int highestNumber = 0;
+            for(int j = 0; j<listOfYears.size();j++){
+                if(yearCounter.get(j) > highestNumber && !answer.contains(listOfYears.get(j))){
+                    highestNumber = yearCounter.get(i);
+                }
+            }
+            for(int d = 0; d <yearCounter.size();d++){
+                if(yearCounter.get(d).equals(highestNumber)){
+                    answer.add(listOfYears.get(d));
                 }
             }
         }
         return answer;
     }
-
     /**
      * Most similar albums to a give album. The similarity can be defined in a variety of ways.
      * For example, it can be defined over the musicians in albums, the similarity between names
@@ -221,7 +249,7 @@ public class ECMMiner {
                 }
             }
             for(Album album : albums){
-                if(highestSales == album.getSales()){
+                if(album.getSales() == highestSales){
                     answer.add(album);
                 }
             }

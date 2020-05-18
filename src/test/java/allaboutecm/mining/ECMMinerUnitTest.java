@@ -45,6 +45,148 @@ class ECMMinerUnitTest {
         assertEquals(1, musicians.size());
         assertTrue(musicians.contains(musician));
     }
+
+    @Test
+    @DisplayName("Busiest year list should return empty list if k=0")
+    public void shouldReturnEmptyListOfBusiestYearsWhenKEqualsZero(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album));
+        List<Integer> albumTest = ecmMiner.busiestYears(0);
+        assertEquals(0,albumTest.size());
+        assertTrue(albumTest.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Busiest year list should return empty list when k is negative")
+    public void shouldReturnEmptyListOfBusiestYearsWhenKIsNegative(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album));
+        List<Integer> albumTest = ecmMiner.busiestYears(-1);
+        assertEquals(0,albumTest.size());
+        assertTrue(albumTest.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Busiest year list should not contain null values")
+    public void busiestYearListShouldNotContainNullValues(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album));
+        List<Integer> albumTest = ecmMiner.busiestYears(2);
+        assertFalse(albumTest.contains(null));
+        assertNotNull(albumTest.get(0));
+    }
+
+
+    @Test
+    @DisplayName("Busiest year list should only return year with most albums released when k = 1")
+    public void shouldReturnBusiestYearWhenKEqualsOne(){
+        Album album = new Album(1979,"2","Rolling");
+        Album album1 = new Album(1973,"1","The Dark Side of the Moon");
+        Album album2 = new Album(1973,"2","Animals");
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album,album1,album2));
+        List<Integer> albumTest = ecmMiner.busiestYears(1);
+        assertEquals(1,albumTest.size());
+        assertEquals(1973, (int) albumTest.get(0));
+    }
+
+    @Test
+    @DisplayName("Busiest year list should only return list of amount of years when k is greater than amount of years")
+    public void shouldOnlyReturnBusiestYearsWhenKGreaterThanAmountOfYears(){
+        Album album = new Album(1979,"2","Rolling");
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album));
+        List<Integer> albumTest = ecmMiner.busiestYears(2);
+        assertEquals(1,albumTest.size());
+    }
+
+    @Test
+    @DisplayName("Busiest year list should return list in order from busiest to least busy")
+    public void shouldReturnBusiestYearListInOrderFromBusiestToLeastBusy(){
+        Album album = new Album(1979,"1","Rolling");
+        Album album1 = new Album(1973,"2","The Dark Side of the Moon");
+        Album album2 = new Album(1973,"3","Animals");
+        Album album3 = new Album(1973,"4","Division Bell");
+        Album album4 = new Album(1995,"5","Shogun");
+        Album album5 = new Album(1995,"6","No Need To Argue");
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album,album1,album2,album3,album4,album5));
+        List<Integer> albumTest = ecmMiner.busiestYears(3);
+        assertEquals(3,albumTest.size());
+        assertTrue(albumTest.get(0) == 1973);
+        assertTrue(albumTest.get(1) == 1995);
+        assertTrue(albumTest.get(2) == 1979);
+    }
+
+    @Test
+    @DisplayName("Best selling albums should return empty list if k=0")
+    public void shouldReturnEmptyListOfBestSellingAlbumsWhenKEqualsZero(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        album.setSales(100000);
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album));
+        List<Album> albumTest = ecmMiner.bestKSellingAlbums(0);
+        assertEquals(0,albumTest.size());
+        assertTrue(albumTest.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Best selling albums should return empty list if k is negative")
+    public void shouldReturnEmptyListOfBestSellingAlbumsWhenKNegative(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        album.setSales(100000);
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album));
+        List<Album> albumTest = ecmMiner.bestKSellingAlbums(-1);
+        assertEquals(0,albumTest.size());
+        assertTrue(albumTest.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Best selling albums should not return null values")
+    public void shouldNotHaveNullInBestSellingAlbumList(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        album.setSales(100000);
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album));
+        List<Album> albumTest = ecmMiner.bestKSellingAlbums(2);
+        assertFalse(albumTest.contains(null));
+    }
+
+    @Test
+    @DisplayName("Best selling albums should return list of size of objects when k is greater than number of objects")
+    public void shouldReturnListWithSameSizeAsObjectsWhenKIsGreaterThanNumberOfObjects(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        album.setSales(100000);
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album));
+        List<Album> albumTest = ecmMiner.bestKSellingAlbums(3);
+        assertEquals(1,albumTest.size());
+
+    }
+
+    @Test
+    @DisplayName("Best selling albums should return best selling album when given two if k = 1")
+    public void shouldReturnBestSellingAlbumGivenTwoAlbums(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        album.setSales(100000);
+        Album album1 = new Album(1979,"2","Animals");
+        album1.setSales(200000);
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album, album1));
+        List<Album> albumTest = ecmMiner.bestKSellingAlbums(1);
+        assertEquals(1,albumTest.size());
+        assertTrue(albumTest.contains(album1));
+    }
+
+    @Test
+    @DisplayName("Best selling albums should return list sorted from highest sales to lowest")
+    public void shouldReturnBestSellingAlbumsSortedFromHighestToLowest(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        Album album1 = new Album(1979,"2","Animals");
+        Album album2 = new Album(1994,"3","Division Bell");
+        album.setSales(100000);
+        album1.setSales(200000);
+        album2.setSales(90000);
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album, album1, album2));
+        List<Album> albumTest = ecmMiner.bestKSellingAlbums(3);
+        assertTrue(albumTest.get(0).getAlbumName().equals("Animals"));
+        assertTrue(albumTest.get(1).getAlbumName().equals("The Dark Side of the Moon"));
+        assertTrue(albumTest.get(2).getAlbumName().equals("Division Bell"));
+    }
+
     @Test
     @DisplayName("Highest Rated album should return empty list if k=0")
     public void shouldReturnEmptyListOfHighestRatedAlbumWhenKEqualsZero(){
