@@ -3,6 +3,7 @@ package allaboutecm.mining;
 import allaboutecm.dataaccess.DAO;
 import allaboutecm.model.Album;
 import allaboutecm.model.Musician;
+import allaboutecm.model.MusicianInstrument;
 import com.google.common.collect.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,8 +91,50 @@ public class ECMMiner {
      * @Param k the number of musicians to be returned.
      */
     public List<Musician> mostTalentedMusicians(int k) {
+        if (k <= 0)
+            throw new IllegalArgumentException("k cannot be smaller than one");
 
-        return Lists.newArrayList();
+        Collection<MusicianInstrument> musicianInstruments = dao.loadAll(MusicianInstrument.class);
+        // Case where size of musicians < k
+        if (musicianInstruments.size() < k) {
+            List<Musician> musicians = Lists.newArrayList();
+            for (MusicianInstrument musicianInstrument : musicianInstruments)
+                musicians.add(musicianInstrument.getMusician());
+            return musicians;
+        }
+
+        Map<Musician, Integer> instrumentCounts = Maps.newHashMap();
+        for (MusicianInstrument instrument : musicianInstruments) {
+            Musician musician = instrument.getMusician();
+            if (instrumentCounts.get(musician) != null) {
+                int currentSize = instrumentCounts.get(musician);
+                instrumentCounts.put(musician, currentSize + instrument.getMusicalInstruments().size());
+            } else {
+                instrumentCounts.put(musician, instrument.getMusicalInstruments().size());
+            }
+        }
+
+        List<Integer> countValueList = Lists.newArrayList();
+        countValueList.addAll(instrumentCounts.values());
+        countValueList.sort((i1, i2) -> { if (i2-i1 > 0) return 1; return -1; });
+        Set<Integer> topKValues = Sets.newHashSet();
+        int idx = 0;
+        while (topKValues.size() < k) {
+            int val = countValueList.get(idx);
+            if (!topKValues.contains(val))
+                topKValues.add(val);
+            idx++;
+        }
+
+        Iterator<Map.Entry<Musician, Integer>> it = instrumentCounts.entrySet().iterator();
+        List<Musician> answer = Lists.newArrayList();
+        while (it.hasNext()) {
+            Map.Entry<Musician, Integer> entry = it.next();
+            if (topKValues.contains(entry.getValue()))
+                answer.add(entry.getKey());
+        }
+
+        return answer;
     }
 
     /**

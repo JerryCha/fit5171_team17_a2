@@ -3,7 +3,9 @@ package allaboutecm.mining;
 import allaboutecm.dataaccess.DAO;
 import allaboutecm.dataaccess.neo4j.Neo4jDAO;
 import allaboutecm.model.Album;
+import allaboutecm.model.MusicalInstrument;
 import allaboutecm.model.Musician;
+import allaboutecm.model.MusicianInstrument;
 import com.google.common.collect.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.Mockito.*;
 
@@ -27,7 +30,6 @@ class ECMMinerUnitTest {
 
     @BeforeEach
     public void setUp() {
-
         dao = mock(Neo4jDAO.class);
         ecmMiner = new ECMMiner(dao);
     }
@@ -45,6 +47,64 @@ class ECMMinerUnitTest {
         assertEquals(1, musicians.size());
         assertTrue(musicians.contains(musician));
     }
+
+    @Test
+    @DisplayName("Most Talented Musicians should throw IllegalException If k is invalid")
+    public void shouldThrowIllegalExceptionGivenKBelowOne() {
+        assertThrows(IllegalArgumentException.class, () -> ecmMiner.mostTalentedMusicians(0));
+    }
+
+    @Test
+    @DisplayName("Most Talented Musicians should return one if there is exactly one")
+    public void shouldReturnOneMusicianIfThereIsOnlyOneMusicianInstrument() {
+        MusicalInstrument instrument1 = new MusicalInstrument("Piano");
+        Musician musician1 = new Musician("Keith Jarrett");
+
+        when(dao.loadAll(MusicianInstrument.class))
+                .thenReturn(Sets.newHashSet(new MusicianInstrument(musician1, Sets.newHashSet(instrument1))));
+
+        List<Musician> musicians = ecmMiner.mostTalentedMusicians(5);
+        assertEquals(musicians.size(), 1);
+        assertTrue(musicians.contains(musician1));
+    }
+
+    @Test
+    @DisplayName("Most Talented Musicians should return three musicians if there are five musicians in total when given k=3")
+    public void shouldReturnThreeIfThereAreFiveMusicianInstrumentsGivenKISThree() {
+        MusicalInstrument instrument1 = new MusicalInstrument("Piano");
+        MusicalInstrument instrument2 = new MusicalInstrument("Violin");
+        MusicalInstrument instrument3 = new MusicalInstrument("Guitar");
+        MusicalInstrument instrument4 = new MusicalInstrument("Sax");
+
+        Musician musician1 = new Musician("Keith Jarrett");
+        Musician musician2 = new Musician("Adele");
+        Musician musician3 = new Musician("Lady Gaga");
+        Musician musician4 = new Musician("Yoshino Nanjo");
+        Musician musician5 = new Musician("Kazuya Kamenashi");
+
+        MusicianInstrument expectedOne = new MusicianInstrument(musician1, Sets.newHashSet(instrument1, instrument2, instrument3));
+        MusicianInstrument expectedTwo = new MusicianInstrument(musician3, Sets.newHashSet(instrument1, instrument4, instrument3, instrument2));
+        MusicianInstrument expectedThree = new MusicianInstrument(musician4, Sets.newHashSet(instrument1, instrument2));
+        MusicianInstrument notExpectedOne = new MusicianInstrument(musician2, Sets.newHashSet(instrument1));
+        MusicianInstrument notExpectedTwo = new MusicianInstrument(musician5, Sets.newHashSet(instrument2));
+
+        when(dao.loadAll(MusicianInstrument.class))
+                .thenReturn(Sets.newHashSet(
+                        expectedOne,
+                        expectedTwo,
+                        expectedThree,
+                        notExpectedOne,
+                        notExpectedTwo)
+                );
+
+        List<Musician> musicians = ecmMiner.mostTalentedMusicians(3);
+
+        assertEquals(3, musicians.size());
+        assertTrue(musicians.contains(expectedOne.getMusician()));
+        assertTrue(musicians.contains(expectedTwo.getMusician()));
+        assertTrue(musicians.contains(expectedThree.getMusician()));
+    }
+
     @Test
     @DisplayName("Highest Rated album should return empty list if k=0")
     public void shouldReturnEmptyListOfHighestRatedAlbumWhenKEqualsZero(){
@@ -304,7 +364,7 @@ class ECMMinerUnitTest {
     }
     @ParameterizedTest
     @ValueSource(ints = {0,-1,-2,-3})
-    @DisplayName("When mining the most prolific musicians the output can no be zero or less that zero")
+    @DisplayName("When mining the most prolific musicians the output can not be zero or less that zero")
     public void MiningTheMostProlificMusiciansKCanNotLessThanOrEqualToZero(int arg)
     {
          assertThrows( IllegalArgumentException.class,()-> ecmMiner.mostProlificMusicians(arg,-1,-1));
