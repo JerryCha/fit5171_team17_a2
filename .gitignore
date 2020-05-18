@@ -1,2 +1,14 @@
 
 src/main/java/allaboutecm/model/.DS_Store
+
+*.class
+
+*.txt
+
+*.lst
+
+target/surefire-reports/
+
+.idea/uiDesigner.xml
+
+diagram.uml
