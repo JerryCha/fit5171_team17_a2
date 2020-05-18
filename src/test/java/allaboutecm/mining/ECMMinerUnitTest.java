@@ -302,4 +302,12 @@ class ECMMinerUnitTest {
         assertEquals(1, albumTest.size());
         assertTrue(albumTest.get(0).getAlbumName().equals("b"));
     }
+    @ParameterizedTest
+    @ValueSource(ints = {0,-1,-2,-3})
+    @DisplayName("When mining the most prolific musicians the output can no be zero or less that zero")
+    public void MiningTheMostProlificMusiciansKCanNotLessThanOrEqualToZero(int arg)
+    {
+        assertThrows( IllegalArgumentException.class,()->ecmMiner.mostProlificMusicians(arg,-1,-1));
+    }
+
 }
