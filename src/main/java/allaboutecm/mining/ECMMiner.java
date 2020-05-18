@@ -212,7 +212,7 @@ public class ECMMiner {
                 }
             }
             for(int d = 0; d <yearCounter.size();d++){
-                if(yearCounter.get(d).equals(highestNumber)){
+                if(yearCounter.get(d).equals(highestNumber) && d < k){
                     answer.add(listOfYears.get(d));
                 }
             }
@@ -231,8 +231,6 @@ public class ECMMiner {
      */
 
     public List<Album> mostSimilarAlbums(int k, String genre, String musician) {
-        if (k <= 0)
-            throw new IllegalArgumentException("k cannot be smaller than 1");
         Collection<Album> albums = dao.loadAll(Album.class);
         ArrayList<Album> album = new ArrayList<>(albums);
         ArrayList<Album> answer = new ArrayList<>();
@@ -262,8 +260,6 @@ public class ECMMiner {
      * TODO: The best-selling k albums in the history
      */
     public List<Album> bestKSellingAlbums(int k) {
-        if (k <= 0)
-            throw new IllegalArgumentException("k cannot be smaller than 1");
         Collection<Album> albums = dao.loadAll(Album.class);
         ArrayList<Album> answer = new ArrayList<>();
         for(int i = 0; i < k; i++) {
@@ -287,8 +283,6 @@ public class ECMMiner {
      * Testing:Done
      */
     public List<Album> topKRatedAlbums(int k) {
-        if (k <= 0)
-            throw new IllegalArgumentException("k cannot be smaller than 1");
         Collection<Album> albums = dao.loadAll(Album.class);
         ArrayList<Album> answer = new ArrayList<>();
         for(int i = 0; i < k; i++){
@@ -312,8 +306,6 @@ public class ECMMiner {
      * Testing:Done
      */
     public List<Musician> topKRatedMusicians(int k) {
-        if (k <= 0)
-            throw new IllegalArgumentException("k cannot be smaller than 1");
         Collection<Musician> musicians = dao.loadAll(Musician.class);
         ArrayList<Musician> answer = new ArrayList<>();
         for(int i = 0; i < k; i++){
@@ -338,8 +330,6 @@ public class ECMMiner {
      * Testing: DONE
      */
     public List<Album> musiciansHighestRatedAlbums(String musicianName, int k){
-        if (k <= 0)
-            throw new IllegalArgumentException("k cannot be smaller than 1");
         Collection<Album> albums = dao.loadAll(Album.class);
         ArrayList<Album> musiciansAlbums = new ArrayList<>();
         ArrayList<Album> answer = new ArrayList<>();
