@@ -82,6 +82,10 @@ public class Album extends Entity {
         tracks = Lists.newArrayList();
     }
 
+    public Album(int releaseYear, int i, String albumName) {
+        super();
+    }
+
     public String getRecordNumber() {
         return recordNumber;
     }
@@ -173,6 +177,7 @@ public class Album extends Entity {
         this.rating = rating;
     }
 
+<<<<<<< Updated upstream
     // genre
     public void setGenre(String genre) {
         if (genre == null)
@@ -184,6 +189,14 @@ public class Album extends Entity {
 
     public String getGenre() {
         return genre;
+=======
+    public String getGenre(){
+        return genre;
+    }
+
+    public void setGenre(String genre){
+        this.genre = genre;
+>>>>>>> Stashed changes
     }
 
     public void delete() {

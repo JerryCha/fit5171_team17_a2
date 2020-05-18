@@ -204,7 +204,6 @@ public class ECMMiner {
                 }
             }
         }
-
         return answer;
     }
 
@@ -238,20 +237,17 @@ public class ECMMiner {
      */
     public List<Album> topKRatedAlbums(int k) {
         Collection<Album> albums = dao.loadAll(Album.class);
-        ArrayList<Album> clonedAlbum = new ArrayList<>(albums);
         ArrayList<Album> answer = new ArrayList<>();
-        while(k > 0) {
+        for(int i = 0; i < k; i++){
             double highestRating = 0;
-            for (Album album : clonedAlbum) {
-                if (album.getRating() > highestRating) {
+            for (Album album : albums) {
+                if (album.getRating() > highestRating && !answer.contains(album)) {
                     highestRating = album.getRating();
                 }
             }
-            for (Album album : clonedAlbum) {
+            for (Album album : albums) {
                 if (album.getRating() == highestRating) {
                     answer.add(album);
-                    clonedAlbum.remove(album);
-                    k--;
                 }
             }
         }
@@ -263,25 +259,21 @@ public class ECMMiner {
      */
     public List<Musician> topKRatedMusicians(int k) {
         Collection<Musician> musicians = dao.loadAll(Musician.class);
-        ArrayList<Musician> clonedMusician = new ArrayList<>(musicians);
         ArrayList<Musician> answer = new ArrayList<>();
-        int iterator = 0;
-        do {
+        for(int i = 0; i < k; i++){
             int highestRating = 0;
-            for (Musician musician : clonedMusician) {
-                if(musician.getRating() > highestRating) {
+            for (Musician musician : musicians) {
+                if(musician.getRating() > highestRating && !answer.contains(musician)) {
                     highestRating = musician.getRating();
                 }
             }
-            for(Musician musician : clonedMusician){
-                if(musician.getRating() == highestRating){
+            for(Musician musician : musicians) {
+                if (musician.getRating() == highestRating) {
                     answer.add(musician);
-                    clonedMusician.remove(musician);
-                    iterator++;
                 }
             }
         }
-        while(k > iterator);
+
         return answer;
     }
 
@@ -292,23 +284,24 @@ public class ECMMiner {
         Collection<Album> albums = dao.loadAll(Album.class);
         ArrayList<Album> musiciansAlbums = new ArrayList<>();
         ArrayList<Album> answer = new ArrayList<>();
-        for(Album album : albums){
-            if(album.getFeaturedMusicians().contains(musicianName)){
-                musiciansAlbums.add(album);
+
+        for(Album album: albums){
+            for(int i = 0; i < album.getFeaturedMusicians().size(); i++){
+            if(album.getFeaturedMusicians().get(i).getName().equals(musicianName)){
+                    musiciansAlbums.add(album);
+                }
             }
         }
-        while(k>0) {
+        for(int i = 0; i < k; i++){
             double highestRating = 0;
             for (Album musAlbum : musiciansAlbums) {
-                if (musAlbum.getRating() > highestRating) {
+                if (musAlbum.getRating() > highestRating && !answer.contains(musAlbum)) {
                     highestRating = musAlbum.getRating();
                 }
             }
             for (Album musAlbum : musiciansAlbums) {
                 if (musAlbum.getRating() == highestRating) {
                     answer.add(musAlbum);
-                    musiciansAlbums.remove(musAlbum);
-                    k--;
                 }
             }
         }
