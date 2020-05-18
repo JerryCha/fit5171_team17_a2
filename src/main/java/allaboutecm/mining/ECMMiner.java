@@ -290,32 +290,23 @@ public class ECMMiner {
     }
 
     /**
-     * TODO: A musicians highest rated album (takes in musician name and number of albums to be returned(k))
+     * A musicians highest rated album (takes in musician name and number of albums to be returned(k))
      */
     public List<Album> musiciansHighestRatedAlbums(String musicianName, int k){
         Collection<Album> albums = dao.loadAll(Album.class);
         ArrayList<Album> musiciansAlbums = new ArrayList<>();
-        ArrayList<Album> answer = new ArrayList<>();
-        for(Album album : albums){
-            if(album.getFeaturedMusicians().contains(musicianName)){
-                musiciansAlbums.add(album);
-            }
+        for (Album album : albums) {
+            for (Musician musician : album.getFeaturedMusicians())
+                if (musician.getName().equals(musicianName))
+                    musiciansAlbums.add(album);
         }
-        while(k>0) {
-            double highestRating = 0;
-            for (Album musAlbum : musiciansAlbums) {
-                if (musAlbum.getRating() > highestRating) {
-                    highestRating = musAlbum.getRating();
-                }
-            }
-            for (Album musAlbum : musiciansAlbums) {
-                if (musAlbum.getRating() == highestRating) {
-                    answer.add(musAlbum);
-                    musiciansAlbums.remove(musAlbum);
-                    k--;
-                }
-            }
-        }
-        return answer;
+        if (k > musiciansAlbums.size())
+            return musiciansAlbums;
+        musiciansAlbums.sort((o1, o2) -> {
+                if (o1.getRating() < o2.getRating())
+                    return 1;
+                return -1;
+        });
+        return musiciansAlbums.subList(0, k);
     }
 }

@@ -6,6 +6,7 @@ import allaboutecm.model.Album;
 import allaboutecm.model.MusicalInstrument;
 import allaboutecm.model.Musician;
 import allaboutecm.model.MusicianInstrument;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.junit.jupiter.api.BeforeEach;
@@ -136,9 +137,39 @@ class ECMMinerUnitTest {
 
     // Test musicianHighestRatedAlbums
     @Test
-    public void shouldReturnOneAlbumOfTheMusician() {
-        assertEquals(true, false);
+    public void shouldReturnThreeAlbumOutOfFiveOfTheMusician() {
+        List<Album> albums = new ArrayList<>();
+        Album album1 = new Album(2018, "1111", "rating 4");
+        album1.setRating(4);
+        Album album2 = new Album(2018, "2222", "rating 3");
+        album2.setRating(3);
+        Album album3 = new Album(2019, "3333", "rating 4");
+        album3.setRating(4);
+        Album album4 = new Album(2017, "4444", "rating 3");
+        album4.setRating(3);
+        Album album5 = new Album(2019, "5555", "rating 5");
+        album5.setRating(5);
+        Musician musician = new Musician("Anonymous");
+        album1.setFeaturedMusicians(Lists.newArrayList(musician));
+        album2.setFeaturedMusicians(Lists.newArrayList(musician));
+        album3.setFeaturedMusicians(Lists.newArrayList(musician));
+        album4.setFeaturedMusicians(Lists.newArrayList(musician));
+        album5.setFeaturedMusicians(Lists.newArrayList(musician));
 
+        albums.add(album1);
+        albums.add(album2);
+        albums.add(album3);
+        albums.add(album4);
+        albums.add(album5);
+
+        when(dao.loadAll(Musician.class)).thenReturn(Sets.newHashSet(musician));
+        when(dao.loadAll(Album.class)).thenReturn(albums);
+
+        List<Album> result = ecmMiner.musiciansHighestRatedAlbums("Anonymous", 3);
+        assertEquals(3, result.size());
+        int[] ratingResults = new int[]{5, 4, 4};
+        for (int i = 0; i < 3; i++)
+            assertEquals(ratingResults[i], result.get(i).getRating());
     }
 
 }
