@@ -16,6 +16,7 @@ import java.net.URL;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 /**
  * TODO: perform integration testing of both ECMMiner and the DAO classes together.
