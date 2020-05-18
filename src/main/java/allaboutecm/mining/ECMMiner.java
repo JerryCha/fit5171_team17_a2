@@ -261,24 +261,25 @@ public class ECMMiner {
 
     public List<Album> mostSimilarAlbums(int k, String genre, String musician) {
         Collection<Album> albums = dao.loadAll(Album.class);
+        ArrayList<Album> album = new ArrayList<>(albums);
         ArrayList<Album> answer = new ArrayList<>();
-        if(musician.length() == 0) {
-            while (k > 0) {
-                for (Album album : albums) {
-                    if (album.getGenre().equals(genre)) {
-                        answer.add(album);
-                        k--;
+            for(int x = 0; x < k; x++){
+                if(musician.length() == 0){
+                    for (int i = 0; i < k; i++) {
+                        for (Album album1 : album) {
+                            if (album1.getGenre().equals(genre)) {
+                                answer.add(album1);
+                            }
+                        }
                     }
-                }
-            }
-        }else{
-            while(k > 0){
-                for(Album album : albums){
-                    if(album.getGenre().equals(genre) && album.getFeaturedMusicians().contains(musician)){
-                        answer.add(album);
-                        k--;
+                }else{
+                    for (Album value : album) {
+                        for (int l = 0; l < value.getFeaturedMusicians().size(); l++) {
+                            if (value.getFeaturedMusicians().get(l).getName().equals(musician) && value.getGenre().equals(genre)) {
+                                answer.add(value);
+                            }
+                        }
                     }
-                }
             }
         }
         return answer;

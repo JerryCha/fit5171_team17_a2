@@ -118,6 +118,85 @@ class ECMMinerUnitTest {
     }
 
     @Test
+    @DisplayName("Similar album list should return empty list if k=0")
+    public void shouldReturnEmptyListOfSimilarAlbumIfKEqualsZero(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album));
+        List<Album> albumTest = ecmMiner.mostSimilarAlbums(0,"Rock","David Gilmour");
+        assertEquals(0,albumTest.size());
+        assertTrue(albumTest.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Similar album list should return empty list if k is negative")
+    public void shouldReturnEmptyListOfSimilarAlbumIfKNegative(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album));
+        List<Album> albumTest = ecmMiner.mostSimilarAlbums(-1,"Rock","David Gilmour");
+        assertEquals(0,albumTest.size());
+        assertTrue(albumTest.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Similar album list should return empty list if genre is blank")
+    public void shouldReturnEmptyListOfSimilarAlbumIfGenreIsBlank(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album));
+        List<Album> albumTest = ecmMiner.mostSimilarAlbums(1,"","David Gilmour");
+        assertEquals(0,albumTest.size());
+        assertTrue(albumTest.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Similar album list should not contain null values")
+    public void similarAlbumListShouldNotContainNullValues(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        album.setGenre("Rock");
+        Musician musician = new Musician("David Gilmour");
+        ArrayList<Musician> musicianListTest1 = new ArrayList<>();
+        musicianListTest1.add(musician);
+        album.setFeaturedMusicians(musicianListTest1);
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album));
+        List<Album> albumTest = ecmMiner.mostSimilarAlbums(2,"Rock","David Gilmour");
+        assertFalse(albumTest.contains(null));
+        assertNotNull(albumTest.get(0));
+    }
+
+    @Test
+    @DisplayName("Similar album list should return albums with same genre given two albums with same genre")
+    public void similarAlbumListShouldReturnSimilarGenreGivenTwoAlbumsWithSameGenre(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        album.setGenre("Rock");
+        Album album1 = new Album(1979,"2","Animals");
+        album1.setGenre("Rock");
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album, album1));
+        List<Album> albumTest = ecmMiner.mostSimilarAlbums(1,"Rock","");
+        assertTrue(albumTest.contains(album));
+        assertTrue(albumTest.contains(album1));
+    }
+
+    @Test
+    @DisplayName("Similar album should return empty albums list if no album genre matches input genre")
+    public void similarAlbumListShouldReturnEmptyListIfNoAlbumMatch(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        album.setGenre("Rock");
+        Album album1 = new Album(1979,"2","Animals");
+        album1.setGenre("Rock");
+        Musician musician = new Musician("David Gilmour");
+        ArrayList<Musician> musicianListTest1 = new ArrayList<>();
+        musicianListTest1.add(musician);
+        album.setFeaturedMusicians(musicianListTest1);
+        Musician musician1 = new Musician("Matt Farrell");
+        ArrayList<Musician> musicianListTest2 = new ArrayList<>();
+        musicianListTest2.add(musician1);
+        album1.setFeaturedMusicians(musicianListTest2);
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album,album1));
+        List<Album> albumTest = ecmMiner.mostSimilarAlbums(1,"Rock","Matt Farrell");
+        assertFalse(albumTest.contains(album));
+        assertTrue(albumTest.contains(album1));
+    }
+
+    @Test
     @DisplayName("Best selling albums should return empty list if k=0")
     public void shouldReturnEmptyListOfBestSellingAlbumsWhenKEqualsZero(){
         Album album = new Album(1973,"1","The Dark Side of the Moon");
@@ -126,6 +205,19 @@ class ECMMinerUnitTest {
         List<Album> albumTest = ecmMiner.bestKSellingAlbums(0);
         assertEquals(0,albumTest.size());
         assertTrue(albumTest.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Similar album list should return albums with same genre and musician (as input) given two musicians")
+    public void similarAlbumListShouldReturnSimilarAlbumWhosMusicianMatchesInputMusician(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        album.setGenre("Rock");
+        Album album1 = new Album(1979,"2","Animals");
+        album1.setGenre("Rock");
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album, album1));
+        List<Album> albumTest = ecmMiner.mostSimilarAlbums(1,"Rock","");
+        assertTrue(albumTest.contains(album));
+        assertTrue(albumTest.contains(album1));
     }
 
     @Test
@@ -276,7 +368,7 @@ class ECMMinerUnitTest {
     }
 
     @Test
-    @DisplayName("Highest Rated album should return album with highest rating when given two musicians")
+    @DisplayName("Highest Rated album should return album with highest rating when given two albums")
     public void shouldReturnTheHighestRatedAlbumGivenTwoMusicians() {
         Album album = new Album(2005,"2","a");
         Album album1 = new Album(2010,"3","b");
@@ -289,7 +381,7 @@ class ECMMinerUnitTest {
     }
 
     @Test
-    @DisplayName("Highest rated album should return list that is size of musicians if k > albums")
+    @DisplayName("Highest rated album should return list that is size of albums if k > albums")
     public void shouldReturnListSizeEqualToNumberOfAlbumsIfKGreaterThanAlbums(){
         Album album = new Album(2015,"1","c");
         album.setRating(1);
