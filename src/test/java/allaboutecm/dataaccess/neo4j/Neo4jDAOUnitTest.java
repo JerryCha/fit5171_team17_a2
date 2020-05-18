@@ -126,6 +126,7 @@ class Neo4jDAOUnitTest {
 
     /**
      * Read of Album of a musician
+     * @throws MalformedURLException
      */
     @Test
     public void successfulReadOfAlbumOfMusician() throws MalformedURLException {
@@ -164,6 +165,7 @@ class Neo4jDAOUnitTest {
 
     /**
      * Read of Musician
+     * @throws MalformedURLException
      */
     @Test
     public void successfulReadOfMusician() throws MalformedURLException {
@@ -184,6 +186,7 @@ class Neo4jDAOUnitTest {
 
     /**
      * Update musician information
+     * @throws MalformedURLException
      */
     @Test
     public void successfulUpdateMusician() throws MalformedURLException {
@@ -193,9 +196,11 @@ class Neo4jDAOUnitTest {
 
         dao.createOrUpdate(musician);
         Collection<Musician> musicians = dao.loadAll(Musician.class); //collection of the musicians
+        Musician loadedMusician = dao.load(Musician.class, musician.getId());
+
         assertEquals(1, musicians.size());             //only one musician in musicians collection
 
-        Musician loadedMusician = musicians.iterator().next();
+        //Musician loadedMusician = musicians.iterator().next();
         assertEquals(musician, loadedMusician);  //ensure two objects are the same before update
         loadedMusician.setName("Kelvin Jack");    //update the name of the musician
         assertEquals("Kelvin Jack",loadedMusician.getName()); //check if it is updated
@@ -208,6 +213,7 @@ class Neo4jDAOUnitTest {
 
     /**
      * Update album
+    * @throws MalformedURLException
      */
     @Test
     public void successfulUpdateAlbum() throws MalformedURLException {
@@ -236,6 +242,7 @@ class Neo4jDAOUnitTest {
 
     /**
      * Delete album
+     *  @throws MalformedURLException
      */
     @Test
     public void successfulDeleteAlbum() throws MalformedURLException {
@@ -261,6 +268,7 @@ class Neo4jDAOUnitTest {
 
     /**
      * Delete a musician and all their albums
+     * @throws MalformedURLException
      */
     @Test
     public void successfulDeleteMusicianInformation() throws MalformedURLException {
