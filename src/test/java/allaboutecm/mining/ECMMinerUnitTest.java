@@ -339,6 +339,44 @@ class ECMMinerUnitTest {
     }
 
     @Test
+    @DisplayName("busiestYears should throw IllegalArgumentException if given k below one")
+    public void shouldThrowIllegalArgumentExceptionIfGivenKZeroForBusiestYear() {
+        assertThrows(IllegalArgumentException.class, () -> ecmMiner.busiestYears(0));
+    }
+
+    @Test
+    @DisplayName("Should return one year if all the albums were released in the same year")
+    public void shouldReturnOneYearIfAllTheAlbumsReleasedInTheSameYear() {
+        Album album1 = new Album(1973,"1","The Dark Side of the Moon");
+        Album album2 = new Album(1973, "ECM 1064/65", "The Köln Concert");
+
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album1, album2));
+
+        List<Integer> years = ecmMiner.busiestYears(5);
+        assertEquals(1, years.size());
+        assertEquals(1973, years.get(0));
+    }
+
+    @Test
+    @DisplayName("Should return two years if there three year have albums released given k=2")
+    public void shouldReturnTwoYearIfThereAreThreeYearsInTotalGivenKisTwo() {
+        Album album1 = new Album(1973,"1","The Dark Side of the Moon");
+        Album album2 = new Album(1973, "ECM 1064/65", "The Köln Concert");
+        Album album3 = new Album(1973, "ECM 1064/65", "The Köln Concert");Album album = new Album(2002,"1","a");
+        Album album4 = new Album(2006,"2","b");
+        Album album5 = new Album(2006,"3","c");
+        Album album6 = new Album(2002,"4","d");
+
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album1, album2, album3, album4, album5, album6));
+
+        List<Integer> years = ecmMiner.busiestYears(2);
+
+        assertEquals(2, years.size());
+        assertTrue(years.contains(1973));
+        assertTrue(years.contains(2006));
+    }
+
+    @Test
     @DisplayName("Highest Rated album should return empty list if k=0")
     public void shouldReturnEmptyListOfHighestRatedAlbumWhenKEqualsZero(){
         Album album = new Album(1973,"1","The Dark Side of the Moon");
