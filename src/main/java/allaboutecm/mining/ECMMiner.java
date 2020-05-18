@@ -212,20 +212,17 @@ public class ECMMiner {
      */
     public List<Album> bestKSellingAlbums(int k) {
         Collection<Album> albums = dao.loadAll(Album.class);
-        ArrayList<Album> clonedAlbum = new ArrayList<>(albums);
         ArrayList<Album> answer = new ArrayList<>();
-        while(k > 0) {
+        for(int i = 0; i < k; i++) {
             int highestSales = 0;
-            for (Album album : clonedAlbum) {
-                if (album.getSales() > highestSales) {
+            for (Album album : albums) {
+                if (album.getSales() > highestSales  && !answer.contains(album)) {
                     highestSales = album.getSales();
                 }
             }
-            for(Album album : clonedAlbum){
+            for(Album album : albums){
                 if(highestSales == album.getSales()){
                     answer.add(album);
-                    clonedAlbum.remove(album);
-                    k--;
                 }
             }
         }
@@ -234,6 +231,7 @@ public class ECMMiner {
 
     /**
      * TODO: The k highest rated albums
+     * Testing:Done
      */
     public List<Album> topKRatedAlbums(int k) {
         Collection<Album> albums = dao.loadAll(Album.class);
@@ -256,6 +254,7 @@ public class ECMMiner {
 
     /**
      * TODO: The k highest rated musicians
+     * Testing:Done
      */
     public List<Musician> topKRatedMusicians(int k) {
         Collection<Musician> musicians = dao.loadAll(Musician.class);
@@ -279,6 +278,7 @@ public class ECMMiner {
 
     /**
      * TODO: A musicians highest rated album (takes in musician name and number of albums to be returned(k))
+     * Testing: DONE
      */
     public List<Album> musiciansHighestRatedAlbums(String musicianName, int k){
         Collection<Album> albums = dao.loadAll(Album.class);
