@@ -80,10 +80,8 @@ public class MusicianUnitTest {
         musician.setAlbums(albums);
 
         Set<Album> musicianAlbums = musician.getAlbums();
-//        Album musicianAlbum = null;
-//        while (musicianAlbums.iterator().hasNext())
-//            musicianAlbum = musicianAlbums.iterator().next();
-//        assertEquals(musicianAlbum, a);
-        assertEquals(musicianAlbums, albums);
+        Album retrievedAlbum = musicianAlbums.iterator().next();
+        assertEquals(albums.size(), musicianAlbums.size());
+        assertEquals(retrievedAlbum, a);
     }
 }

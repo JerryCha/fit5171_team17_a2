@@ -30,6 +30,10 @@ public class ECMMiner {
      * When startYear/endYear is negative, that means startYear/endYear is ignored.
      */
     public List<Musician> mostProlificMusicians(int k, int startYear, int endYear) {
+        if (k <= 0)     //The input number of k can not less than or equal to zero
+            throw new IllegalArgumentException("The input number of k can not less than or equal to zero");
+        if (startYear > endYear)    //The end year should greater that start year
+            throw new IllegalArgumentException("The end year should greater that start year");
         Collection<Musician> musicians = dao.loadAll(Musician.class);
         Map<String, Musician> nameMap = Maps.newHashMap();
         for (Musician m : musicians) {
@@ -97,6 +101,8 @@ public class ECMMiner {
      */
 
     public List<Musician> mostSocialMusicians(int k) {
+        if (k <= 0)
+            throw new IllegalArgumentException("The input number of k can not less than or equal to zero");
         Collection<Album> albums = dao.loadAll(Album.class);
         ArrayList<Musician> socialMusician = new ArrayList<>();
         ArrayList<Integer> counterArray = new ArrayList<>();

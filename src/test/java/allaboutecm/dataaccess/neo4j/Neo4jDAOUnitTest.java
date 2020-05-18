@@ -126,6 +126,7 @@ class Neo4jDAOUnitTest {
 
     /**
      * Read of Album of a musician
+     * @throws MalformedURLException
      */
     @Test
     public void successfulReadOfAlbumOfMusician() throws MalformedURLException {
@@ -164,6 +165,7 @@ class Neo4jDAOUnitTest {
 
     /**
      * Read of Musician
+     * @throws MalformedURLException
      */
     @Test
     public void successfulReadOfMusician() throws MalformedURLException {
@@ -184,6 +186,7 @@ class Neo4jDAOUnitTest {
 
     /**
      * Update musician information
+     * @throws MalformedURLException
      */
     @Test
     public void successfulUpdateMusician() throws MalformedURLException {
@@ -193,9 +196,11 @@ class Neo4jDAOUnitTest {
 
         dao.createOrUpdate(musician);
         Collection<Musician> musicians = dao.loadAll(Musician.class); //collection of the musicians
+        Musician loadedMusician = dao.load(Musician.class, musician.getId());
+
         assertEquals(1, musicians.size());             //only one musician in musicians collection
 
-        Musician loadedMusician = musicians.iterator().next();
+        //Musician loadedMusician = musicians.iterator().next();
         assertEquals(musician, loadedMusician);  //ensure two objects are the same before update
         loadedMusician.setName("Kelvin Jack");    //update the name of the musician
         assertEquals("Kelvin Jack",loadedMusician.getName()); //check if it is updated
@@ -208,6 +213,7 @@ class Neo4jDAOUnitTest {
 
     /**
      * Update album
+    * @throws MalformedURLException
      */
     @Test
     public void successfulUpdateAlbum() throws MalformedURLException {
@@ -236,6 +242,7 @@ class Neo4jDAOUnitTest {
 
     /**
      * Delete album
+     *  @throws MalformedURLException
      */
     @Test
     public void successfulDeleteAlbum() throws MalformedURLException {
@@ -261,6 +268,7 @@ class Neo4jDAOUnitTest {
 
     /**
      * Delete a musician and all their albums
+     * @throws MalformedURLException
      */
     @Test
     public void successfulDeleteMusicianInformation() throws MalformedURLException {
@@ -282,5 +290,25 @@ class Neo4jDAOUnitTest {
         dao.delete(testMusician);
         assertEquals(0, dao.loadAll(Musician.class).size()); //delete the musician in dao
         
+    }
+    /**
+     * Successful Find the musician by name
+     * @throws MalformedURLException
+     */
+    @Test
+    public void successfulFindMusicianByName() throws MalformedURLException {
+        //assertEquals(0, dao.loadAll(Musician.class).size());
+
+        Musician musician = new Musician("Keith Jarrett");
+        musician.setMusicianUrl(new URL("https://www.keithjarrett.org/"));
+       // musician.setAlbums(Collections.singleton(new Album(1975, "ECM 1064/65", "The Köln Concert")));
+
+        //dao.findMusicianByName("Keith Jarrett");
+        dao.createOrUpdate(musician);
+       // Musician testMusician = dao.load(Musician.class, musician.getId());
+        Musician musician2= dao.findMusicianByName("Keith Jarrett");   //find the musician by name
+        Musician musician3= dao.findMusicianByName("Keith");   //find the not exist musician
+        assertEquals(musician,musician2);
+        assertEquals(null,musician3);
     }
 }
