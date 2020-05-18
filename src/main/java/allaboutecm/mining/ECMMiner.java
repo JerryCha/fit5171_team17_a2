@@ -190,40 +190,6 @@ public class ECMMiner {
      */
 
     public List<Integer> busiestYears(int k) {
-        if (k <= 0)
-            throw new IllegalArgumentException("k cannot be smaller than 1");
-        Collection<Album> albums = dao.loadAll(Album.class);
-        ArrayList<Integer> listOfYears = new ArrayList<>();
-        ArrayList<Integer> yearCounter = new ArrayList<>();
-        for(Album album: albums){
-            if(listOfYears.contains(album.getReleaseYear())){
-                int index = listOfYears.indexOf(album.getReleaseYear());
-                yearCounter.add(index, yearCounter.get(index) + 1);
-            }else{
-                listOfYears.add(album.getReleaseYear());
-                yearCounter.add(1);
-            }
-        }
-        if (listOfYears.size() <= k)
-            return listOfYears;
-        ArrayList<Integer> answer = new ArrayList<>();
-        for(int i =0; i < k; i++){
-            int highestCount = 0;
-            for(Integer yearCount : yearCounter){
-                if(yearCount > highestCount && !answer.contains(listOfYears.get(yearCounter.indexOf(yearCount)))){
-                    highestCount = yearCount;
-                }
-            }
-            for(Integer years : listOfYears){
-                int idx = listOfYears.indexOf(years);
-                if(idx == yearCounter.indexOf(highestCount)){
-                    answer.add(years);
-                }
-            }
-        }
-        return answer;
-    }*/
-    public List<Integer> busiestYears(int k) {
         Collection<Album> albums = dao.loadAll(Album.class);
         ArrayList<Album> album = new ArrayList<>(albums);
         ArrayList<Integer> listOfYears = new ArrayList<>();
