@@ -313,8 +313,16 @@ class ECMMinerUnitTest {
     @ParameterizedTest
     @ValueSource(ints = {2009,2019})
     @DisplayName("The end year should greater that start year")
-    public void theStartYearShouldBeEarlierThanTheEndYear(int argument)
+    public void theEndYearShouldGreaterThanTheStartYear(int argument)
     {
          assertThrows( IllegalArgumentException.class,()-> ecmMiner.mostProlificMusicians(1,argument,2008));
+    }
+
+    @ParameterizedTest
+    @DisplayName("mostSocialMusicians function can not have the k less that or equal to zero")
+    @ValueSource(ints = {0,-1})
+    public void ShouldThrowExceptionIfMostSocialMusicianHaveTheNumberLessThanOrEqualToZero(int argument)
+    {
+         assertThrows(IllegalArgumentException.class, ()->ecmMiner.mostSocialMusicians(argument));
     }
 }
