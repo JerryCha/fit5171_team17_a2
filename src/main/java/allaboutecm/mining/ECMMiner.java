@@ -142,6 +142,7 @@ public class ECMMiner {
      *
      * @Param k the number of musicians to be returned.
      */
+    //Musician musician: album.getFeaturedMusicians())
 
     public List<Musician> mostSocialMusicians(int k) {
         if (k <= 0)
@@ -151,35 +152,32 @@ public class ECMMiner {
         ArrayList<Integer> counterArray = new ArrayList<>();
         for(Album album : albums){
             if (album.getFeaturedMusicians().size() > 1){
-                for (Musician musician: album.getFeaturedMusicians()){
-                    if (!socialMusician.contains(musician)) {
-                        socialMusician.add(musician);
+                for (int a=0; a<album.getFeaturedMusicians().size();a++){
+                    if (!socialMusician.contains(album.getFeaturedMusicians().get(a))) {
+                        socialMusician.add(album.getFeaturedMusicians().get(a));
+                        counterArray.add(1);
                     }
-                    int index = socialMusician.indexOf(musician);
-                    if(counterArray.get(index) == null){
-                        counterArray.add(index,0);
+                    int index = socialMusician.indexOf(album.getFeaturedMusicians().get(a));
+                    if(socialMusician.contains(album.getFeaturedMusicians().get(a))){
+                        counterArray.add(index,counterArray.get(index) +1);
                     }
-                    counterArray.add(index,counterArray.get(index) + 1);
                 }
             }
         }
         ArrayList<Musician> answer = new ArrayList<>();
-        int iterator = 0;
-        do {
+        for(int i = 0; i < k; i++) {
             int highest = 0;
-            for(int musNumber : counterArray) {
-                if (musNumber > highest) {
-                    highest = musNumber;
+            for(int j = 0; j < socialMusician.size(); j++) {
+                if (counterArray.get(j) > highest && !answer.contains(socialMusician.get(j))) {
+                    highest = counterArray.get(j);
                 }
             }
-            for(int counterValue: counterArray) {
-                if(counterValue == highest) {
-                    answer.add(socialMusician.get(counterValue));
-                    iterator++;
+            for(int d = 0; d < counterArray.size();d++){
+                if(counterArray.get(d).equals(highest)){
+                    answer.add(socialMusician.get(d));
                 }
             }
         }
-        while(k > iterator);
         return answer;
     }
 
