@@ -220,14 +220,11 @@ public class ECMMiner {
         return answer;
     }
     /**
-     * Most similar albums to a give album. The similarity can be defined in a variety of ways.
-     * For example, it can be defined over the musicians in albums, the similarity between names
-     * of the albums & tracks, etc.
-     *
      * Similarity is based on genre and musician of album. If artist is left empty it is ignored
      *
      * @Param k the number of albums to be returned.
-     * @Param album
+     * @Param genre is the genre of music to be returned (cannot be blank)
+     * @Param musician is the musician to be returned, if musician is blank it is ignored (search by genre only)
      */
 
     public List<Album> mostSimilarAlbums(int k, String genre, String musician) {
@@ -257,7 +254,9 @@ public class ECMMiner {
     }
 
     /**
-     * TODO: The best-selling k albums in the history
+     * Best K selling albums of all time
+     *
+     * @Param k is the amount of albums to be returned
      */
     public List<Album> bestKSellingAlbums(int k) {
         Collection<Album> albums = dao.loadAll(Album.class);
@@ -279,8 +278,9 @@ public class ECMMiner {
     }
 
     /**
-     * TODO: The k highest rated albums
-     * Testing:Done
+     * Top k rated albums of all time (released by any musician)
+     *
+     * @Param k is the amount of albums to be returned
      */
     public List<Album> topKRatedAlbums(int k) {
         Collection<Album> albums = dao.loadAll(Album.class);
@@ -302,8 +302,9 @@ public class ECMMiner {
     }
 
     /**
-     * TODO: The k highest rated musicians
-     * Testing:Done
+     * Top k rated musicians of all time
+     *
+     * @Param k is the amount of musicians to be returned
      */
     public List<Musician> topKRatedMusicians(int k) {
         Collection<Musician> musicians = dao.loadAll(Musician.class);
@@ -326,8 +327,10 @@ public class ECMMiner {
     }
 
     /**
-     * TODO: A musicians highest rated album (takes in musician name and number of albums to be returned(k))
-     * Testing: DONE
+     * This method returns an individual musicians top k rated albums of all time
+     *
+     * @Param k is the amount of albums to be returned
+     * @Param musicianName is the name of the musician whos albums you want to return
      */
     public List<Album> musiciansHighestRatedAlbums(String musicianName, int k){
         Collection<Album> albums = dao.loadAll(Album.class);

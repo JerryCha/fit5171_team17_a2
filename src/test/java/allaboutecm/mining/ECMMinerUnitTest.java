@@ -34,6 +34,7 @@ class ECMMinerUnitTest {
         ecmMiner = new ECMMiner(dao);
     }
 
+    //Below are all of the tests for mostProlificMusicians method
     @Test
     @DisplayName("Most Prolific Musician should return one given one")
     public void shouldReturnTheMusicianWhenThereIsOnlyOne() {
@@ -47,7 +48,31 @@ class ECMMinerUnitTest {
         assertEquals(1, musicians.size());
         assertTrue(musicians.contains(musician));
     }
+    @ParameterizedTest
+    @ValueSource(ints = {0,-1,-2,-3})
+    @DisplayName("When mining the most prolific musicians the output can not be zero or less that zero")
+    public void MiningTheMostProlificMusiciansKCanNotLessThanOrEqualToZero(int arg)
+    {
+        assertThrows( IllegalArgumentException.class,()-> ecmMiner.mostProlificMusicians(arg,-1,-1));
+    }
 
+    @ParameterizedTest
+    @ValueSource(ints = {2009,2019})
+    @DisplayName("The end year should greater that start year")
+    public void theEndYearShouldGreaterThanTheStartYear(int argument)
+    {
+        assertThrows( IllegalArgumentException.class,()-> ecmMiner.mostProlificMusicians(1,argument,2008));
+    }
+
+    @ParameterizedTest
+    @DisplayName("mostSocialMusicians function can not have the k less that or equal to zero")
+    @ValueSource(ints = {0,-1})
+    public void ShouldThrowExceptionIfMostSocialMusicianHaveTheNumberLessThanOrEqualToZero(int argument)
+    {
+        assertThrows(IllegalArgumentException.class, ()->ecmMiner.mostSocialMusicians(argument));
+    }
+
+    //Below are all of the tests for busiestYears method
     @Test
     @DisplayName("Busiest year list should return empty list if k=0")
     public void shouldReturnEmptyListOfBusiestYearsWhenKEqualsZero(){
@@ -117,6 +142,35 @@ class ECMMinerUnitTest {
         assertTrue(albumTest.get(2) == 1979);
     }
 
+
+    @Test
+    @DisplayName("Should return one year if all the albums were released in the same year")
+    public void shouldReturnOneYearIfAllTheAlbumsReleasedInTheSameYear() {
+        Album album1 = new Album(1973,"1","The Dark Side of the Moon");
+        Album album2 = new Album(1973, "ECM 1064/65", "The Köln Concert");
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album1, album2));
+        List<Integer> years = ecmMiner.busiestYears(5);
+        assertEquals(1, years.size());
+        assertEquals(1973, years.get(0));
+    }
+
+    @Test
+    @DisplayName("Should return two years if there three year have albums released given k=2")
+    public void shouldReturnTwoYearIfThereAreThreeYearsInTotalGivenKisTwo() {
+        Album album1 = new Album(1973,"1","The Dark Side of the Moon");
+        Album album2 = new Album(1973, "ECM 1064/65", "The Köln Concert");
+        Album album3 = new Album(1973, "ECM 1064/65", "The Köln Concert");Album album = new Album(2002,"1","a");
+        Album album4 = new Album(2006,"2","b");
+        Album album5 = new Album(2006,"3","c");
+        Album album6 = new Album(2002,"4","d");
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album1, album2, album3, album4, album5, album6));
+        List<Integer> years = ecmMiner.busiestYears(2);
+        assertEquals(2, years.size());
+        assertTrue(years.contains(1973));
+        assertTrue(years.contains(2006));
+    }
+
+    //Below are all of the tests for mostSimilarAlbum method
     @Test
     @DisplayName("Similar album list should return empty list if k=0")
     public void shouldReturnEmptyListOfSimilarAlbumIfKEqualsZero(){
@@ -197,17 +251,6 @@ class ECMMinerUnitTest {
     }
 
     @Test
-    @DisplayName("Best selling albums should return empty list if k=0")
-    public void shouldReturnEmptyListOfBestSellingAlbumsWhenKEqualsZero(){
-        Album album = new Album(1973,"1","The Dark Side of the Moon");
-        album.setSales(100000);
-        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album));
-        List<Album> albumTest = ecmMiner.bestKSellingAlbums(0);
-        assertEquals(0,albumTest.size());
-        assertTrue(albumTest.isEmpty());
-    }
-
-    @Test
     @DisplayName("Similar album list should return albums with same genre and musician (as input) given two musicians")
     public void similarAlbumListShouldReturnSimilarAlbumWhosMusicianMatchesInputMusician(){
         Album album = new Album(1973,"1","The Dark Side of the Moon");
@@ -218,6 +261,18 @@ class ECMMinerUnitTest {
         List<Album> albumTest = ecmMiner.mostSimilarAlbums(1,"Rock","");
         assertTrue(albumTest.contains(album));
         assertTrue(albumTest.contains(album1));
+    }
+
+    //Below are all of the tests for bestKSellingAlbums method
+    @Test
+    @DisplayName("Best selling albums should return empty list if k=0")
+    public void shouldReturnEmptyListOfBestSellingAlbumsWhenKEqualsZero(){
+        Album album = new Album(1973,"1","The Dark Side of the Moon");
+        album.setSales(100000);
+        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album));
+        List<Album> albumTest = ecmMiner.bestKSellingAlbums(0);
+        assertEquals(0,albumTest.size());
+        assertTrue(albumTest.isEmpty());
     }
 
     @Test
@@ -281,6 +336,7 @@ class ECMMinerUnitTest {
         assertTrue(albumTest.get(2).getAlbumName().equals("Division Bell"));
     }
 
+    //Below are all of the tests for mostTalentedMusicians method
     @Test
     @DisplayName("Most Talented Musicians should throw IllegalException If k is invalid")
     public void shouldThrowIllegalExceptionGivenKBelowOne() {
@@ -292,10 +348,8 @@ class ECMMinerUnitTest {
     public void shouldReturnOneMusicianIfThereIsOnlyOneMusicianInstrument() {
         MusicalInstrument instrument1 = new MusicalInstrument("Piano");
         Musician musician1 = new Musician("Keith Jarrett");
-
         when(dao.loadAll(MusicianInstrument.class))
                 .thenReturn(Sets.newHashSet(new MusicianInstrument(musician1, Sets.newHashSet(instrument1))));
-
         List<Musician> musicians = ecmMiner.mostTalentedMusicians(5);
         assertEquals(musicians.size(), 1);
         assertTrue(musicians.contains(musician1));
@@ -338,33 +392,7 @@ class ECMMinerUnitTest {
         assertTrue(musicians.contains(expectedThree.getMusician()));
     }
 
-    @Test
-    @DisplayName("Should return one year if all the albums were released in the same year")
-    public void shouldReturnOneYearIfAllTheAlbumsReleasedInTheSameYear() {
-        Album album1 = new Album(1973,"1","The Dark Side of the Moon");
-        Album album2 = new Album(1973, "ECM 1064/65", "The Köln Concert");
-        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album1, album2));
-        List<Integer> years = ecmMiner.busiestYears(5);
-        assertEquals(1, years.size());
-        assertEquals(1973, years.get(0));
-    }
-
-    @Test
-    @DisplayName("Should return two years if there three year have albums released given k=2")
-    public void shouldReturnTwoYearIfThereAreThreeYearsInTotalGivenKisTwo() {
-        Album album1 = new Album(1973,"1","The Dark Side of the Moon");
-        Album album2 = new Album(1973, "ECM 1064/65", "The Köln Concert");
-        Album album3 = new Album(1973, "ECM 1064/65", "The Köln Concert");Album album = new Album(2002,"1","a");
-        Album album4 = new Album(2006,"2","b");
-        Album album5 = new Album(2006,"3","c");
-        Album album6 = new Album(2002,"4","d");
-        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album1, album2, album3, album4, album5, album6));
-        List<Integer> years = ecmMiner.busiestYears(2);
-        assertEquals(2, years.size());
-        assertTrue(years.contains(1973));
-        assertTrue(years.contains(2006));
-    }
-
+    //Below are all of the tests for topKRatedAlbums method
     @Test
     @DisplayName("Highest Rated album should return empty list if k=0")
     public void shouldReturnEmptyListOfHighestRatedAlbumWhenKEqualsZero(){
@@ -443,6 +471,7 @@ class ECMMinerUnitTest {
         assertTrue(musicianTest.isEmpty());
         }
 
+    //Below are all of the tests for topKRatedMusicians method
     @Test
     @DisplayName("Highest Rated Musician should return list with no null entries")
     public void shouldNotHaveNullInHighestRatedMusicianList(){
@@ -502,6 +531,7 @@ class ECMMinerUnitTest {
         assertTrue(musicianTest.get(2).getName().equals("Noel Hogan"));
     }
 
+    //Below are all of the tests for musiciansHighestRatedAlbums method
     @Test
     @DisplayName("Musician highest rated album should return empty list if k = 0")
     public void shouldReturnEmptyListForMusicianHighestRatedAlbumWhenKEqualsZero(){
@@ -621,28 +651,5 @@ class ECMMinerUnitTest {
         List<Album> albumTest = ecmMiner.musiciansHighestRatedAlbums("Fergal Lawler", 1);
         assertEquals(1, albumTest.size());
         assertTrue(albumTest.get(0).getAlbumName().equals("b"));
-    }
-    @ParameterizedTest
-    @ValueSource(ints = {0,-1,-2,-3})
-    @DisplayName("When mining the most prolific musicians the output can not be zero or less that zero")
-    public void MiningTheMostProlificMusiciansKCanNotLessThanOrEqualToZero(int arg)
-    {
-         assertThrows( IllegalArgumentException.class,()-> ecmMiner.mostProlificMusicians(arg,-1,-1));
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = {2009,2019})
-    @DisplayName("The end year should greater that start year")
-    public void theEndYearShouldGreaterThanTheStartYear(int argument)
-    {
-         assertThrows( IllegalArgumentException.class,()-> ecmMiner.mostProlificMusicians(1,argument,2008));
-    }
-
-    @ParameterizedTest
-    @DisplayName("mostSocialMusicians function can not have the k less that or equal to zero")
-    @ValueSource(ints = {0,-1})
-    public void ShouldThrowExceptionIfMostSocialMusicianHaveTheNumberLessThanOrEqualToZero(int argument)
-    {
-         assertThrows(IllegalArgumentException.class, ()->ecmMiner.mostSocialMusicians(argument));
     }
 }
