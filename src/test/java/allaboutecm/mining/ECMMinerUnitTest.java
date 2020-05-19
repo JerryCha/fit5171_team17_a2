@@ -652,4 +652,30 @@ class ECMMinerUnitTest {
         assertEquals(1, albumTest.size());
         assertTrue(albumTest.get(0).getAlbumName().equals("b"));
     }
+<<<<<<< HEAD
+=======
+    @ParameterizedTest
+    @ValueSource(ints = {0,-1,-2,-3})
+    @DisplayName("When mining the most prolific musicians the output can not be zero or less that zero")
+    public void MiningTheMostProlificMusiciansKCanNotLessThanOrEqualToZero(int arg)
+    {
+         assertThrows( IllegalArgumentException.class,()-> ecmMiner.mostProlificMusicians(arg,-1,-1));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {2009,2019})
+    @DisplayName("The end year should greater than the start year")
+    public void theEndYearShouldGreaterThanTheStartYear(int argument)
+    {
+         assertThrows( IllegalArgumentException.class,()-> ecmMiner.mostProlificMusicians(1,argument,2008));
+    }
+
+    @ParameterizedTest
+    @DisplayName("mostSocialMusicians function can not have the k less that or equal to zero")
+    @ValueSource(ints = {0,-1})
+    public void ShouldThrowExceptionIfMostSocialMusicianHaveTheNumberLessThanOrEqualToZero(int argument)
+    {
+         assertThrows(IllegalArgumentException.class, ()->ecmMiner.mostSocialMusicians(argument));
+    }
+>>>>>>> master
 }
