@@ -632,7 +632,7 @@ class ECMMinerUnitTest {
 
     @ParameterizedTest
     @ValueSource(ints = {2009,2019})
-    @DisplayName("The end year should greater that start year")
+    @DisplayName("The end year should greater than the start year")
     public void theEndYearShouldGreaterThanTheStartYear(int argument)
     {
          assertThrows( IllegalArgumentException.class,()-> ecmMiner.mostProlificMusicians(1,argument,2008));
