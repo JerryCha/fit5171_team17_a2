@@ -195,13 +195,15 @@ public class ECMMiner {
         for(int i = 0; i < album.size(); i++){
             if(listOfYears.contains(album.get(i).getReleaseYear())){
                 int index = listOfYears.indexOf(album.get(i).getReleaseYear());
-//                yearCounter.add(index, yearCounter.get(index) + 1);
                 yearCounter.set(index, yearCounter.get(index) + 1);
             }else{
                 listOfYears.add(album.get(i).getReleaseYear());
                 yearCounter.add(1);
             }
         }
+        if (listOfYears.size() <= k)
+            return listOfYears;
+
         ArrayList<Integer> answer = new ArrayList<>();
         for(int i = 0; i < k; i++){
             int highestNumber = 0;
@@ -213,11 +215,6 @@ public class ECMMiner {
                 }
             }
             answer.add(listOfYears.get(idx));
-//            for(int d = 0; d <yearCounter.size();d++){
-//                if(yearCounter.get(d).equals(highestNumber) && d < k){
-//                    answer.add(listOfYears.get(d));
-//                }
-//            }
         }
         return answer;
     }
