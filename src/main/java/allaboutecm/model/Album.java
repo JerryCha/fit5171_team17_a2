@@ -61,6 +61,10 @@ public class Album extends Entity {
     @Property(name="tracks")
     private List<String> tracks;
 
+    //
+    @Property(name="additionalInformation")
+    private String additionalInformation;
+
     public Album() {
     }
 
@@ -93,6 +97,8 @@ public class Album extends Entity {
     public void setRecordNumber(String recordNumber) {
         notNull(recordNumber);
         notBlank(recordNumber);
+        assert(recordNumber.length() >= 8);
+        assert(recordNumber.substring(0, 4).equals("ECM "));
 
         this.recordNumber = recordNumber;
     }
@@ -118,6 +124,11 @@ public class Album extends Entity {
     }
 
     public void setAlbumURL(URL albumURL) {
+        // TODO: can be implemented using regular expression
+        //https://www.ecmrecords.com/catalogue/143038752303/histoires-du-cinema-complete-soundtrack-jean-luc-godard
+        String albumUrlString = albumURL.toString();
+        assert(albumUrlString.length() >= 37);
+        assert(albumUrlString.substring(0, 37).equals("https://www.ecmrecords.com/catalogue/"));
         this.albumURL = albumURL;
     }
 
@@ -129,6 +140,11 @@ public class Album extends Entity {
         this.tracks = tracks;
     }
 
+    public void addATrack(String aTrack){
+        notNull(aTrack);
+        notBlank(aTrack);
+        this.tracks.add(aTrack);
+    }
 
     public int getReleaseYear() {
         return releaseYear;
@@ -137,7 +153,7 @@ public class Album extends Entity {
     public void setReleaseYear(int releaseYear) {
         if (releaseYear > Calendar.getInstance().get(Calendar.YEAR))
             throw new IllegalArgumentException("Year invalid");
-        else if (releaseYear < 0)
+        else if (releaseYear < 1970 || releaseYear > Calendar.getInstance().get(Calendar.YEAR))
             throw new IllegalArgumentException("Year Cannot be negative");
         this.releaseYear = releaseYear;
 
@@ -157,6 +173,17 @@ public class Album extends Entity {
     // Extension
     public int getSales() {
         return sales;
+    }
+
+    //
+    // additional functionality added in Assignment 1
+    public String getAdditionalInformation() {
+        return additionalInformation;
+    }
+
+    // additional functionality added in Assignment 1
+    public void setAdditionalInformation(String additionalInformation) {
+        this.additionalInformation = additionalInformation;
     }
 
     public void setSales(int sales) {

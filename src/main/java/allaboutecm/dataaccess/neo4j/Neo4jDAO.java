@@ -105,4 +105,31 @@ public class Neo4jDAO implements DAO {
         }
         return (T) existingEntity;
     }
+
+    // work from group 11
+    @Override
+    public Album findAlbumByYearNumberName(Integer releaseYear, String recordNumber, String name) {
+        Filters filters = new Filters();
+        filters.add(new Filter("albumName", EQUALS, name)
+                .and(new Filter("recordNumber", EQUALS, recordNumber))
+                .and(new Filter("releaseYear", EQUALS, releaseYear)));
+        Collection<Album> albums = session.loadAll(Album.class, filters);
+        if (albums.isEmpty()) {
+            return null;
+        } else {
+            return albums.iterator().next();
+        }
+    }
+
+    @Override
+    public MusicalInstrument findMusicalInstrumentByName(String name) {
+        Filters filters = new Filters();
+        filters.add(new Filter("name", EQUALS, name));
+        Collection<MusicalInstrument> musicalInstruments = session.loadAll(MusicalInstrument.class, filters);
+        if (musicalInstruments.isEmpty()) {
+            return null;
+        } else {
+            return musicalInstruments.iterator().next();
+        }
+    }
 }

@@ -1,11 +1,16 @@
 package allaboutecm.model;
 
+import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Property;
+
 import java.util.Objects;
 
 import static org.apache.commons.lang3.Validate.notBlank;
 import static org.apache.commons.lang3.Validate.notNull;
 
+@NodeEntity
 public class MusicalInstrument extends Entity {
+    @Property(name="musicalInstrumentName")
     private String name;
 
     public MusicalInstrument() {

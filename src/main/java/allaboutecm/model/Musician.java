@@ -36,6 +36,15 @@ public class Musician extends Entity {
     @Relationship(type="albums")
     private Set<Album> albums;
 
+    //
+    // TODO: annotations may be added
+    @Property(name="musicianBiography")
+    private String biography;   // if musician is a group, member names will be put here
+
+    // TODO: annotations may be added
+    @Property(name="musicianGroup")
+    private boolean group;
+
     public Musician() {
     }
 
@@ -45,6 +54,8 @@ public class Musician extends Entity {
         this.musicianUrl = null;
 
         albums = Sets.newHashSet();
+        this.biography = null;
+        this.group = false;
     }
 
     public String getName() {
@@ -71,6 +82,23 @@ public class Musician extends Entity {
         this.albums = Collections.emptySet();
     }
 
+    //
+    public String getBiography(){
+        return biography;
+    }
+
+    public void setBiography(String biography){
+        this.biography = biography;
+    }
+
+    public boolean getGroup(){
+        return this.group;
+    }
+
+    public void setGroup(boolean group){
+        this.group = group;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -89,6 +117,10 @@ public class Musician extends Entity {
     }
 
     public void setMusicianUrl(URL musicianUrl) {
+        String musicianUrlString = musicianUrl.toString();
+        assert(musicianUrlString.length() >= 35);
+        assert(musicianUrlString.substring(0, 35).equals("https://www.ecmrecords.com/artists/"));
+
         this.musicianUrl = musicianUrl;
     }
 

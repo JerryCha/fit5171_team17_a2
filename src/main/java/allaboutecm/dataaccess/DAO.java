@@ -1,6 +1,8 @@
 package allaboutecm.dataaccess;
 
+import allaboutecm.model.Album;
 import allaboutecm.model.Entity;
+import allaboutecm.model.MusicalInstrument;
 import allaboutecm.model.Musician;
 
 import java.util.Collection;
@@ -15,4 +17,10 @@ public interface DAO {
     <T extends Entity> void delete(T entity);
 
     Musician findMusicianByName(String name);
+
+    //
+
+    Album findAlbumByYearNumberName(Integer releaseYear, String recordNumber, String name);
+
+    MusicalInstrument findMusicalInstrumentByName(String name);
 }
