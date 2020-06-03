@@ -118,8 +118,8 @@ public class Musician extends Entity {
 
     public void setMusicianUrl(URL musicianUrl) {
         String musicianUrlString = musicianUrl.toString();
-        assert(musicianUrlString.length() >= 35);
-        assert(musicianUrlString.substring(0, 35).equals("https://www.ecmrecords.com/artists/"));
+        //assert(musicianUrlString.length() >= 35);
+        //assert(musicianUrlString.substring(0, 35).equals("https://www.ecmrecords.com/artists/"));
 
         this.musicianUrl = musicianUrl;
     }
