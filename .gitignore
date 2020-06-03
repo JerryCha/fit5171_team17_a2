@@ -12,3 +12,9 @@ target/surefire-reports/
 .idea/uiDesigner.xml
 
 diagram.uml
+
+*.html
+
+target/pit-reports/
+
+.DS_Store
