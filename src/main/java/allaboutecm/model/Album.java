@@ -127,8 +127,8 @@ public class Album extends Entity {
         // TODO: can be implemented using regular expression
         //https://www.ecmrecords.com/catalogue/143038752303/histoires-du-cinema-complete-soundtrack-jean-luc-godard
         String albumUrlString = albumURL.toString();
-        assert(albumUrlString.length() >= 37);
-        assert(albumUrlString.substring(0, 37).equals("https://www.ecmrecords.com/catalogue/"));
+        //assert(albumUrlString.length() >= 37);
+        //assert(albumUrlString.substring(0, 37).equals("https://www.ecmrecords.com/catalogue/"));
         this.albumURL = albumURL;
     }
 
