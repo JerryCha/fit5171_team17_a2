@@ -2,16 +2,18 @@ package allaboutecm.model;
 
 import com.google.common.collect.Sets;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class MusicianUnitTest {
     private Musician musician;
@@ -83,5 +85,54 @@ public class MusicianUnitTest {
         Album retrievedAlbum = musicianAlbums.iterator().next();
         assertEquals(albums.size(), musicianAlbums.size());
         assertEquals(retrievedAlbum, a);
+    }
+
+    // Test URL
+    @Test
+    public void shouldSetMusicianUrlIfGivenValidURLInstance() {
+        URL url = null;
+        try {
+            url = new URL("https://https://stevetibbetts.com/");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        if (url != null) {
+            musician.setMusicianUrl(url);
+            assertEquals(url, musician.getMusicianUrl());
+        }
+    }
+
+    @Test
+    public void shouldSetMusicianUrlGivenNull() {
+        musician.setMusicianUrl(null);
+        assertNull(musician.getMusicianUrl());
+    }
+
+    // Test biography
+    @Test
+    public void shouldSetBiographyGivenNonEmptyString() {
+        String bio = "Master saxophonist Roscoe Mitchell (born in Chicago in 1940) is one of the great innovators in creative music of the post-Coltrane, post-Ayler era.";
+        musician.setBiography(bio);
+        assertEquals(bio, musician.getBiography());
+    }
+
+    @Test
+    public void shouldSetBiographyGivenNull() {
+        musician.setBiography(null);
+        assertNull(musician.getBiography());
+    }
+
+    @Test
+    public void shouldThrowIllegalArgumentExceptionIfGivenEmptyString() {
+        assertThrows(IllegalArgumentException.class, () -> musician.setBiography(""));
+    }
+
+    // Test group
+    @ParameterizedTest
+    @ValueSource(strings = {"true", "false"})
+    public void shouldSetGivenGroupTrueAndFalse(String arg) {
+        boolean group = Boolean.parseBoolean(arg);
+        musician.setGroup(group);
+        assertEquals(group, musician.getGroup());
     }
 }

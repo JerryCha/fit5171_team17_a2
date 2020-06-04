@@ -11,10 +11,6 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-
 
 /**
  * An artist that has been featured in (at least) one ECM record.
@@ -37,11 +33,9 @@ public class Musician extends Entity {
     private Set<Album> albums;
 
     //
-    // TODO: annotations may be added
     @Property(name="musicianBiography")
     private String biography;   // if musician is a group, member names will be put here
 
-    // TODO: annotations may be added
     @Property(name="musicianGroup")
     private boolean group;
 
@@ -83,19 +77,26 @@ public class Musician extends Entity {
     }
 
     //
-    public String getBiography(){
+    public String getBiography() {
         return biography;
     }
 
-    public void setBiography(String biography){
-        this.biography = biography;
+    public void setBiography(String biography) {
+        if (biography == null)
+            this.biography = null;
+        else {
+            biography = biography.trim();
+            if (biography.isEmpty())
+                throw new IllegalArgumentException("");
+            this.biography = biography;
+        }
     }
 
-    public boolean getGroup(){
+    public boolean getGroup() {
         return this.group;
     }
 
-    public void setGroup(boolean group){
+    public void setGroup(boolean group) {
         this.group = group;
     }
 
@@ -117,10 +118,6 @@ public class Musician extends Entity {
     }
 
     public void setMusicianUrl(URL musicianUrl) {
-        String musicianUrlString = musicianUrl.toString();
-        //assert(musicianUrlString.length() >= 35);
-        //assert(musicianUrlString.substring(0, 35).equals("https://www.ecmrecords.com/artists/"));
-
         this.musicianUrl = musicianUrl;
     }
 
@@ -143,7 +140,7 @@ public class Musician extends Entity {
     private void checkAlbums(Set<Album> albums) {
         if (albums == null)
             throw new IllegalArgumentException("Albums cannot be null");
-        else if (albums.size() == 0)
+        else if (albums.isEmpty())
             throw new IllegalArgumentException("Albums cannot be empty");
     }
 
