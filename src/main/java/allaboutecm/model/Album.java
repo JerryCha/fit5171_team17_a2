@@ -65,7 +65,7 @@ public class Album extends Entity {
     @Property(name="additionalInformation")
     private String additionalInformation;
 
-    public Album() {
+    private Album() {
     }
 
     public Album(int releaseYear, String recordNumber, String albumName) {
@@ -81,13 +81,10 @@ public class Album extends Entity {
 
         this.albumURL = null;
 
-        featuredMusicians = Lists.newArrayList();
-        instruments = Sets.newHashSet();
-        tracks = Lists.newArrayList();
-    }
-
-    public Album(int releaseYear, int i, String albumName) {
-        super();
+        this.featuredMusicians = Lists.newArrayList();
+        this.instruments = Sets.newHashSet();
+        this.tracks = Lists.newArrayList();
+        this.additionalInformation = null;
     }
 
     public String getRecordNumber() {
@@ -95,10 +92,11 @@ public class Album extends Entity {
     }
 
     public void setRecordNumber(String recordNumber) {
-        notNull(recordNumber);
-        notBlank(recordNumber);
-        assert(recordNumber.length() >= 8);
-        assert(recordNumber.substring(0, 4).equals("ECM "));
+        if (recordNumber == null)
+            throw new IllegalArgumentException("record number cannot be null");
+        recordNumber = recordNumber.trim();
+        if (recordNumber.length() < 8 || !recordNumber.substring(0, 4).equals("ECM "))
+            throw new IllegalArgumentException("record number should be in format of \"ECM XXXX\" where XXXX is the number of album");
 
         this.recordNumber = recordNumber;
     }
@@ -108,6 +106,8 @@ public class Album extends Entity {
     }
 
     public void setFeaturedMusicians(List<Musician> featuredMusicians) {
+        if (featuredMusicians == null)
+            throw new IllegalArgumentException("featuredMusicians cannot be null");
         this.featuredMusicians = featuredMusicians;
     }
 
@@ -116,6 +116,8 @@ public class Album extends Entity {
     }
 
     public void setInstruments(Set<MusicianInstrument> instruments) {
+        if (instruments == null)
+            throw new IllegalArgumentException("instruments cannot be null");
         this.instruments = instruments;
     }
 
@@ -124,9 +126,8 @@ public class Album extends Entity {
     }
 
     public void setAlbumURL(URL albumURL) {
-        // TODO: can be implemented using regular expression
         //https://www.ecmrecords.com/catalogue/143038752303/histoires-du-cinema-complete-soundtrack-jean-luc-godard
-        String albumUrlString = albumURL.toString();
+//        String albumUrlString = albumURL.toString();
         //assert(albumUrlString.length() >= 37);
         //assert(albumUrlString.substring(0, 37).equals("https://www.ecmrecords.com/catalogue/"));
         this.albumURL = albumURL;
@@ -137,6 +138,8 @@ public class Album extends Entity {
     }
 
     public void setTracks(List<String> tracks) {
+        if (tracks == null)
+            throw new IllegalArgumentException("tracks cannot be null");
         this.tracks = tracks;
     }
 
@@ -158,10 +161,10 @@ public class Album extends Entity {
         this.releaseYear = releaseYear;
 
     }
+
     public String getAlbumName() {
         return albumName;
     }
-
 
     public void setAlbumName(String albumName) {
         notNull(albumName);
@@ -187,7 +190,6 @@ public class Album extends Entity {
     }
 
     public void setSales(int sales) {
-        // TODO: Sales check: should greater than or equal to 0
         if (sales < 0)
             throw new IllegalArgumentException("sales cannot be under 0");
         this.sales = sales;
