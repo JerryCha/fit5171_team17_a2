@@ -32,7 +32,7 @@ public class MusicianInstrument extends Entity {
     @Relationship(type="musicalInstruments")
     private Set<MusicalInstrument> musicalInstruments;
 
-    public MusicianInstrument() {
+    private MusicianInstrument() {
     }
 
     public MusicianInstrument(Musician musician, Set<MusicalInstrument> musicalInstrument) {
@@ -62,7 +62,7 @@ public class MusicianInstrument extends Entity {
     public void setMusicalInstruments(Set<MusicalInstrument> musicalInstruments) {
         if (musicalInstruments == null)
             throw new NullPointerException();
-        else if (musicalInstruments.size() == 0)
+        else if (musicalInstruments.isEmpty())
             throw new IllegalArgumentException("Cannot set an empty set of musical instruments");
         this.musicalInstruments = musicalInstruments;
     }

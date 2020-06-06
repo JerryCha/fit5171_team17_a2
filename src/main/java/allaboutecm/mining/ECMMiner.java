@@ -5,17 +5,13 @@ import allaboutecm.model.Album;
 import allaboutecm.model.Musician;
 import allaboutecm.model.MusicianInstrument;
 import com.google.common.collect.*;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 /**
- * TODO: implement and test the methods in this class.
  * Note that you can extend the Neo4jDAO class to make implementing this class easier.
  */
 public class ECMMiner {
-//    private static Logger logger = LoggerFactory.getLogger(ECMMiner.class);
 
     private final DAO dao;
 
@@ -33,7 +29,7 @@ public class ECMMiner {
     public List<Musician> mostProlificMusicians(int k, int startYear, int endYear) {
         if (k <= 0)     //The input number of k can not less than or equal to zero
             throw new IllegalArgumentException("The input number of k can not less than or equal to zero");
-        if (startYear > endYear)    //The end year should greater that start year
+        if (endYear != -1 && startYear > endYear)    //The end year should greater that start year
             throw new IllegalArgumentException("The end year should greater that start year");
         Collection<Musician> musicians = dao.loadAll(Musician.class);
         Map<String, Musician> nameMap = Maps.newHashMap();
@@ -58,10 +54,10 @@ public class ECMMiner {
         }
 
         Map<String, Collection<Album>> albumMultimap = multimap.asMap();
-        for (String name : albumMultimap.keySet()) {
-            Collection<Album> albums = albumMultimap.get(name);
+        for (Map.Entry<String, Collection<Album>> name : albumMultimap.entrySet()) {
+            Collection<Album> albums = albumMultimap.get(name.getKey());
             int size = albums.size();
-            countMap.put(size, nameMap.get(name));
+            countMap.put(size, nameMap.get(name.getKey()));
         }
 
         List<Musician> result = Lists.newArrayList();
@@ -175,52 +171,6 @@ public class ECMMiner {
                     answer.add(socialMusician.get(d));
                 }
             }
-        }
-        return answer;
-    }
-
-    public List<Musician> mostSocialMusicians2(int k) {
-        if (k <= 0)
-            throw new IllegalArgumentException("The input number of k can not less than or equal to zero");
-
-        Collection<Musician> musicians = dao.loadAll(Musician.class);
-
-        if (musicians.size() <= k) {
-            List<Musician> answer = Lists.newArrayList();
-            answer.addAll(musicians);
-
-            return answer;
-        }
-
-        HashMap<Musician, Set<Musician>> musicianFeatures = Maps.newHashMap();
-
-        for (Musician musician : musicians) {
-            Set<Album> albums = musician.getAlbums();
-            Set<Musician> collaborateMusicians = musicianFeatures.getOrDefault(musician, Sets.newHashSet());
-            for (Album album : albums) {
-                List<Musician> featuredMusicians = album.getFeaturedMusicians();
-                for (Musician featuredMusician : featuredMusicians) {
-                    if (!collaborateMusicians.contains(featuredMusician))
-                        collaborateMusicians.add(featuredMusician);
-                }
-            }
-            musicianFeatures.put(musician, collaborateMusicians);
-        }
-
-        ArrayList<Integer> countList = Lists.newArrayList();
-        for (Map.Entry<Musician, Set<Musician>> entry : musicianFeatures.entrySet()) {
-            int musiciansCount = entry.getValue().size();
-            if (!countList.contains(musiciansCount))
-                countList.add(musiciansCount);
-        }
-        countList.sort((i1, i2) -> i1-i2 > 0 ? -1 : 1);
-        int maxVal = countList.get(0);
-        int minVal = countList.get(k-1);
-        List<Musician> answer = Lists.newArrayList();
-        for (Map.Entry<Musician, Set<Musician>> entry : musicianFeatures.entrySet()) {
-            int musiciansCount = entry.getValue().size();
-            if (musiciansCount >= minVal && musiciansCount <= maxVal)
-                answer.add(entry.getKey());
         }
         return answer;
     }

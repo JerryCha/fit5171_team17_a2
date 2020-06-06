@@ -126,10 +126,6 @@ public class Album extends Entity {
     }
 
     public void setAlbumURL(URL albumURL) {
-        //https://www.ecmrecords.com/catalogue/143038752303/histoires-du-cinema-complete-soundtrack-jean-luc-godard
-//        String albumUrlString = albumURL.toString();
-        //assert(albumUrlString.length() >= 37);
-        //assert(albumUrlString.substring(0, 37).equals("https://www.ecmrecords.com/catalogue/"));
         this.albumURL = albumURL;
     }
 
@@ -217,12 +213,6 @@ public class Album extends Entity {
 
     public String getGenre() {
         return genre;
-    }
-
-    public void delete() {
-        this.albumName = null;
-        this.albumURL =null;
-
     }
 
     @Override

@@ -45,6 +45,36 @@ class ECMMinerUnitTest {
         assertEquals(1, musicians.size());
         assertTrue(musicians.contains(musician));
     }
+
+    @Test
+    public void shouldReturnThreeMusiciansWhenThereAreFive() {
+        Musician mus1 = new Musician("Keith Jarrett");
+        Musician mus2 = new Musician("Adale");
+        Musician mus3 = new Musician("Lady");
+        Musician mus4 = new Musician("MJ");
+        Musician mus5 = new Musician("K");
+
+        Album m1a1 = new Album(1975, "ECM 1064/65", "The Köln Concert");
+        Album m1a2 = new Album(1973,"1","The Dark Side of the Moon");
+        Album m1a3 = new Album(1995,"5","Shogun");
+        mus1.setAlbums(Sets.newHashSet(m1a1, m1a2, m1a3));
+        Album m2a1 = new Album(1979,"12","Rolling");
+        Album m2a2 = new Album(1973,"2","The Dark Side of the Moon");
+        mus2.setAlbums(Sets.newHashSet(m2a1, m2a2));
+        Album m3a1 = new Album(1989,"3","Animals");
+        Album m3a2 = new Album(2004, "ECM 33", "Hello World");
+        mus3.setAlbums(Sets.newHashSet(m3a1, m3a2));
+        Album m4a1 = new Album(1986,"4","Division Bell");
+        mus4.setAlbums(Sets.newHashSet(m4a1));
+        Album m5a1 = new Album(1995,"6","No Need To Argue");
+        mus5.setAlbums(Sets.newHashSet(m5a1));
+
+        when(dao.loadAll(Musician.class)).thenReturn(Sets.newHashSet(mus1, mus2, mus3, mus4, mus5));
+
+        List<Musician> results = ecmMiner.mostProlificMusicians(3, -1, -1);
+        assertEquals(3, results.size());
+    }
+
     @ParameterizedTest
     @ValueSource(ints = {0,-1,-2,-3})
     @DisplayName("When mining the most prolific musicians the output can not be zero or less that zero")
