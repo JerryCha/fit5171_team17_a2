@@ -6,6 +6,7 @@ import allaboutecm.model.Album;
 import allaboutecm.model.MusicalInstrument;
 import allaboutecm.model.Musician;
 import allaboutecm.model.MusicianInstrument;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 /**
  * Integration testing of both ECMMiner and the DAO classes together.
@@ -105,12 +105,63 @@ class ECMMinerIntegrationTest {
         assertThrows( IllegalArgumentException.class,()-> ecmMiner.mostProlificMusicians(1,argument,2008));
     }
 
+    // Below are all of the tests for mostSocialMusician
     @ParameterizedTest
     @DisplayName("mostSocialMusicians function can not have the k less that or equal to zero")
     @ValueSource(ints = {0,-1})
     public void ShouldThrowExceptionIfMostSocialMusicianHaveTheNumberLessThanOrEqualToZero(int argument)
     {
         assertThrows(IllegalArgumentException.class, ()->ecmMiner.mostSocialMusicians(argument));
+    }
+
+    @Test
+    @DisplayName("Most social musician should return list of one if there is only one musician")
+    public void shouldReturnOneMusicianIfThereIsOnlyOne(){
+        Musician musician = new Musician("Adele");
+        Album album = new Album(2010,"1","a");
+        album.setFeaturedMusicians(Lists.newArrayList(musician));
+//        when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album));
+        dao.createOrUpdate(album);
+
+        List<Musician> albumTest = ecmMiner.mostSocialMusicians(2);
+        assertEquals(1, albumTest.size());
+    }
+
+    @Test
+    @DisplayName("Most Social Musician should throw IllegalException If k is 0")
+    public void mostSocialMusicianShouldThrowIllegalExceptionGivenKEqualsZero() {
+        assertThrows(IllegalArgumentException.class, () -> ecmMiner.mostSocialMusicians(0));
+    }
+
+    @Test
+    @DisplayName("Most Social Musician should throw IllegalException If k is negative")
+    public void mostSocialMusicianShouldThrowIllegalExceptionGivenKNegative() {
+        assertThrows(IllegalArgumentException.class, () -> ecmMiner.mostSocialMusicians(-1));
+    }
+
+    @Test
+    @DisplayName("Most social musician should only return list with most social musician given three musicians")
+    public void shouldReturnListWithMostSocialMusicianGivenThree(){
+        Musician musician = new Musician("Adele");
+        Musician musician1 = new Musician("David Gilmour");
+        Musician musician2 = new Musician("Lady Gaga");
+        Album album = new Album(2010,"1","Best Pop Songs");
+        Album album1 = new Album(2019,"2","Best Rock Songs");
+        ArrayList<Musician> socialTest1 = new ArrayList<>();
+        ArrayList<Musician> socialTest2 = new ArrayList<>();
+        socialTest1.add(musician);
+        socialTest1.add(musician2);
+        socialTest2.add(musician1);
+        socialTest2.add(musician2);
+        album.setFeaturedMusicians(socialTest1);
+        album1.setFeaturedMusicians(socialTest2);
+
+        dao.createOrUpdate(album);
+        dao.createOrUpdate(album1);
+
+        List<Musician> albumTest = ecmMiner.mostSocialMusicians(1);
+        assertEquals(1,albumTest.size());
+        assertTrue(albumTest.get(0).getName().equals("Lady Gaga"));
     }
 
     @Test
@@ -338,8 +389,7 @@ class ECMMinerIntegrationTest {
         dao.createOrUpdate(album1);
 
         List<Album> albumTest = ecmMiner.mostSimilarAlbums(1,"Rock","");
-        assertTrue(albumTest.contains(album));
-        assertTrue(albumTest.contains(album1));
+        assertEquals(1, albumTest.size());
     }
 
     @Test
@@ -377,7 +427,7 @@ class ECMMinerIntegrationTest {
         dao.createOrUpdate(album);
         dao.createOrUpdate(album1);
 
-        List<Album> albumTest = ecmMiner.mostSimilarAlbums(1,"Rock","");
+        List<Album> albumTest = ecmMiner.mostSimilarAlbums(2,"Rock","");
         assertTrue(albumTest.contains(album));
         assertTrue(albumTest.contains(album1));
     }

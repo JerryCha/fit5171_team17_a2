@@ -6,6 +6,7 @@ import allaboutecm.model.Album;
 import allaboutecm.model.MusicalInstrument;
 import allaboutecm.model.Musician;
 import allaboutecm.model.MusicianInstrument;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -89,14 +90,6 @@ class ECMMinerUnitTest {
     public void theEndYearShouldGreaterThanTheStartYear(int argument)
     {
         assertThrows( IllegalArgumentException.class,()-> ecmMiner.mostProlificMusicians(1,argument,2008));
-    }
-
-    @ParameterizedTest
-    @DisplayName("mostSocialMusicians function can not have the k less that or equal to zero")
-    @ValueSource(ints = {0,-1})
-    public void ShouldThrowExceptionIfMostSocialMusicianHaveTheNumberLessThanOrEqualToZero(int argument)
-    {
-        assertThrows(IllegalArgumentException.class, ()->ecmMiner.mostSocialMusicians(argument));
     }
 
     //Below are all of the tests for busiestYears method
@@ -244,7 +237,7 @@ class ECMMinerUnitTest {
     }
 
     @Test
-    @DisplayName("Similar album list should return albums with same genre given two albums with same genre")
+    @DisplayName("Similar album list should return one album with same genre given two albums with same genre")
     public void similarAlbumListShouldReturnSimilarGenreGivenTwoAlbumsWithSameGenre(){
         Album album = new Album(1973,"1","The Dark Side of the Moon");
         album.setGenre("Rock");
@@ -252,8 +245,7 @@ class ECMMinerUnitTest {
         album1.setGenre("Rock");
         when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album, album1));
         List<Album> albumTest = ecmMiner.mostSimilarAlbums(1,"Rock","");
-        assertTrue(albumTest.contains(album));
-        assertTrue(albumTest.contains(album1));
+        assertEquals(1, albumTest.size());
     }
 
     @Test
@@ -285,7 +277,7 @@ class ECMMinerUnitTest {
         Album album1 = new Album(1979,"2","Animals");
         album1.setGenre("Rock");
         when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album, album1));
-        List<Album> albumTest = ecmMiner.mostSimilarAlbums(1,"Rock","");
+        List<Album> albumTest = ecmMiner.mostSimilarAlbums(2,"Rock","");
         assertTrue(albumTest.contains(album));
         assertTrue(albumTest.contains(album1));
     }
@@ -686,18 +678,26 @@ class ECMMinerUnitTest {
         assertTrue(albumTest.get(0).getAlbumName().equals("b"));
     }
 
-    //Below are all of the tests for mostSocialMusician
+    // Below are all of the tests for mostSocialMusician
+    @ParameterizedTest
+    @DisplayName("mostSocialMusicians function can not have the k less that or equal to zero")
+    @ValueSource(ints = {0,-1})
+    public void ShouldThrowExceptionIfMostSocialMusicianHaveTheNumberLessThanOrEqualToZero(int argument)
+    {
+        assertThrows(IllegalArgumentException.class, ()->ecmMiner.mostSocialMusicians(argument));
+    }
+
     @Test
-    @DisplayName("Most social musician should return list with no null entries")
-    public void shouldNotHaveNullInMostSocialMusicianList(){
+    @DisplayName("Most social musician should return list of one if there is only one musician")
+    public void shouldReturnOneMusicianIfThereIsOnlyOne(){
         Musician musician = new Musician("Adele");
         Album album = new Album(2010,"1","a");
-        album.setRating(3);
-        when(dao.loadAll(Musician.class)).thenReturn(Sets.newHashSet(musician));
+        album.setFeaturedMusicians(Lists.newArrayList(musician));
         when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album));
         List<Musician> albumTest = ecmMiner.mostSocialMusicians(2);
-        assertFalse(albumTest.contains(null));
+        assertEquals(1, albumTest.size());
     }
+
     @Test
     @DisplayName("Most Social Musician should throw IllegalException If k is 0")
     public void mostSocialMusicianShouldThrowIllegalExceptionGivenKEqualsZero() {
@@ -726,7 +726,6 @@ class ECMMinerUnitTest {
         socialTest2.add(musician2);
         album.setFeaturedMusicians(socialTest1);
         album1.setFeaturedMusicians(socialTest2);
-        //when(dao.loadAll(Musician.class)).thenReturn(Sets.newHashSet(musician, musician1, musician2));
         when(dao.loadAll(Album.class)).thenReturn(Sets.newHashSet(album, album1));
         List<Musician> albumTest = ecmMiner.mostSocialMusicians(1);
         assertEquals(1,albumTest.size());

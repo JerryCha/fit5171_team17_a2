@@ -2,6 +2,7 @@ package allaboutecm.mining;
 
 import allaboutecm.dataaccess.DAO;
 import allaboutecm.model.Album;
+import allaboutecm.model.Entity;
 import allaboutecm.model.Musician;
 import allaboutecm.model.MusicianInstrument;
 import com.google.common.collect.*;
@@ -19,6 +20,19 @@ public class ECMMiner {
         this.dao = dao;
     }
 
+    private <T extends Entity> List<T> buildListAnswer(int k, Map<Integer, List<T>> countMap) {
+        List<Integer> countList = Lists.newArrayList(countMap.keySet());
+        countList.sort((i1, i2) -> i2 > i1 ? 1 : -1);
+
+        List<T> answer = Lists.newArrayList();
+        for (Integer i : countList.subList(0, k)) {
+            List<T> toAdd = countMap.get(i);
+            if ((answer.size() + toAdd.size()) <= k)
+                answer.addAll(toAdd);
+        }
+        return answer;
+    }
+
     /**
      * Returns the most prolific musician in terms of number of albums released.
      *
@@ -31,54 +45,29 @@ public class ECMMiner {
             throw new IllegalArgumentException("The input number of k can not less than or equal to zero");
         if (endYear != -1 && startYear > endYear)    //The end year should greater that start year
             throw new IllegalArgumentException("The end year should greater that start year");
+
+        // Loading all the musicians
         Collection<Musician> musicians = dao.loadAll(Musician.class);
-        Map<String, Musician> nameMap = Maps.newHashMap();
-        for (Musician m : musicians) {
-            nameMap.put(m.getName(), m);
-        }
 
-        ListMultimap<String, Album> multimap = MultimapBuilder.treeKeys().arrayListValues().build();
-        ListMultimap<Integer, Musician> countMap = MultimapBuilder.treeKeys().arrayListValues().build();
+        // For case when total musicians is less than k
+        if (musicians.size() < k)
+            return Lists.newArrayList(musicians);
 
+        // # of musician > k
+        Map<Integer, List<Musician>> albumsCount = Maps.newHashMap();
         for (Musician musician : musicians) {
-            Set<Album> albums = musician.getAlbums();
-            for (Album album : albums) {
-                boolean toInclude =
-                        !((startYear > 0 && album.getReleaseYear() < startYear) ||
-                                (endYear > 0 && album.getReleaseYear() > endYear));
-
-                if (toInclude) {
-                    multimap.put(musician.getName(), album);
-                }
+            int count = 0;
+            for (Album album : musician.getAlbums()) {
+                int releaseYear = album.getReleaseYear();
+                boolean toInclude = (startYear == -1 || releaseYear >= startYear) && (endYear == -1 || releaseYear <= endYear);
+                if (toInclude)
+                    count += 1;
             }
+            List<Musician> musicianList = albumsCount.getOrDefault(count, Lists.newArrayList());
+            musicianList.add(musician);
+            albumsCount.put(count, musicianList);
         }
-
-        Map<String, Collection<Album>> albumMultimap = multimap.asMap();
-        for (Map.Entry<String, Collection<Album>> name : albumMultimap.entrySet()) {
-            Collection<Album> albums = albumMultimap.get(name.getKey());
-            int size = albums.size();
-            countMap.put(size, nameMap.get(name.getKey()));
-        }
-
-        List<Musician> result = Lists.newArrayList();
-        List<Integer> sortedKeys = Lists.newArrayList(countMap.keySet());
-        sortedKeys.sort(Ordering.natural().reverse());
-        for (Integer count : sortedKeys) {
-            List<Musician> list = countMap.get(count);
-            if (list.size() >= k) {
-                break;
-            }
-            if (result.size() + list.size() >= k) {
-                int newAddition = k - result.size();
-                for (int i = 0; i < newAddition; i++) {
-                    result.add(list.get(i));
-                }
-            } else {
-                result.addAll(list);
-            }
-        }
-
-        return result;
+        return this.buildListAnswer(k, albumsCount);
     }
 
     /**
@@ -99,38 +88,15 @@ public class ECMMiner {
             return musicians;
         }
 
-        Map<Musician, Integer> instrumentCounts = Maps.newHashMap();
-        for (MusicianInstrument instrument : musicianInstruments) {
-            Musician musician = instrument.getMusician();
-            if (instrumentCounts.get(musician) != null) {
-                int currentSize = instrumentCounts.get(musician);
-                instrumentCounts.put(musician, currentSize + instrument.getMusicalInstruments().size());
-            } else {
-                instrumentCounts.put(musician, instrument.getMusicalInstruments().size());
-            }
+        Map<Integer, List<Musician>> instrumentCounts = Maps.newHashMap();
+        for (MusicianInstrument ins : musicianInstruments) {
+            int count = ins.getMusicalInstruments().size();
+            List<Musician> musicianList = instrumentCounts.getOrDefault(count, Lists.newArrayList());
+            musicianList.add(ins.getMusician());
+            instrumentCounts.put(count, musicianList);
         }
 
-        List<Integer> countValueList = Lists.newArrayList();
-        countValueList.addAll(instrumentCounts.values());
-        countValueList.sort((i1, i2) -> i2 > i1 ? 1 : -1 );
-        Set<Integer> topKValues = Sets.newHashSet();
-        int idx = 0;
-        while (topKValues.size() < k) {
-            int val = countValueList.get(idx);
-            if (!topKValues.contains(val))
-                topKValues.add(val);
-            idx++;
-        }
-
-        Iterator<Map.Entry<Musician, Integer>> it = instrumentCounts.entrySet().iterator();
-        List<Musician> answer = Lists.newArrayList();
-        while (it.hasNext()) {
-            Map.Entry<Musician, Integer> entry = it.next();
-            if (topKValues.contains(entry.getValue()))
-                answer.add(entry.getKey());
-        }
-
-        return answer;
+        return this.buildListAnswer(k, instrumentCounts);
     }
 
     /**
@@ -141,38 +107,32 @@ public class ECMMiner {
     public List<Musician> mostSocialMusicians(int k) {
         if (k <= 0)
             throw new IllegalArgumentException("The input number of k can not less than or equal to zero");
+
         Collection<Album> albums = dao.loadAll(Album.class);
-        ArrayList<Musician> socialMusician = new ArrayList<>();
-        ArrayList<Integer> counterArray = new ArrayList<>();
-        for(Album album : albums){
-            if (album.getFeaturedMusicians().size() > 1){
-                for (int a=0; a<album.getFeaturedMusicians().size();a++){
-                    if (!socialMusician.contains(album.getFeaturedMusicians().get(a))) {
-                        socialMusician.add(album.getFeaturedMusicians().get(a));
-                        counterArray.add(1);
-                    }
-                    int index = socialMusician.indexOf(album.getFeaturedMusicians().get(a));
-                    if(socialMusician.contains(album.getFeaturedMusicians().get(a))){
-                        counterArray.add(index,counterArray.get(index) +1);
-                    }
-                }
+
+        // Count for each musician by iterating featuredMusician within each album
+        Map<Musician, Integer> musicianCount = Maps.newHashMap();
+        for (Album album : albums) {
+            for (Musician musician : album.getFeaturedMusicians()) {
+                int count = musicianCount.getOrDefault(musician, 0);
+                count += 1;
+                musicianCount.put(musician, count);
             }
         }
-        ArrayList<Musician> answer = new ArrayList<>();
-        for(int i = 0; i < k; i++) {
-            int highest = 0;
-            for(int j = 0; j < socialMusician.size(); j++) {
-                if (counterArray.get(j) > highest && !answer.contains(socialMusician.get(j))) {
-                    highest = counterArray.get(j);
-                }
-            }
-            for(int d = 0; d < counterArray.size();d++){
-                if(counterArray.get(d).equals(highest)){
-                    answer.add(socialMusician.get(d));
-                }
-            }
+
+        // Case where # of musicians <= k
+        if (musicianCount.size() <= k) {
+            return Lists.newArrayList(musicianCount.keySet());
         }
-        return answer;
+
+        // # of musicians > k
+        Map<Integer, List<Musician>> participationCount = Maps.newHashMap();
+        for (Map.Entry<Musician, Integer> entry : musicianCount.entrySet()) {
+            List<Musician> musicianList = participationCount.getOrDefault(entry.getValue(), Lists.newArrayList());
+            musicianList.add(entry.getKey());
+            participationCount.put(entry.getValue(), musicianList);
+        }
+        return this.buildListAnswer(k, participationCount);
     }
 
     /**
@@ -220,28 +180,34 @@ public class ECMMiner {
      * @Param musician is the musician to be returned, if musician is blank it is ignored (search by genre only)
      */
 
-    public List<Album> mostSimilarAlbums(int k, String genre, String musician) {
+    public List<Album> mostSimilarAlbums(int k, String genre, String featuredMusician) {
+        if (k <= 0 || genre == null || genre.isEmpty())
+            return Lists.newArrayList();
+
         Collection<Album> albums = dao.loadAll(Album.class);
-        ArrayList<Album> album = new ArrayList<>(albums);
-        ArrayList<Album> answer = new ArrayList<>();
-            for(int x = 0; x < k; x++){
-                if(musician.length() == 0){
-                    for (int i = 0; i < k; i++) {
-                        for (Album album1 : album) {
-                            if (album1.getGenre().equals(genre)) {
-                                answer.add(album1);
-                            }
-                        }
-                    }
-                }else{
-                    for (Album value : album) {
-                        for (int l = 0; l < value.getFeaturedMusicians().size(); l++) {
-                            if (value.getFeaturedMusicians().get(l).getName().equals(musician) && value.getGenre().equals(genre)) {
-                                answer.add(value);
-                            }
-                        }
-                    }
-            }
+
+        List<Album> filteredAlbums = Lists.newArrayList();
+        for (Album album : albums) {
+            boolean matchGenre = album.getGenre().equals(genre);
+            boolean featured =
+                    featuredMusician == null ||
+                    featuredMusician.isEmpty() ||
+                    album.getFeaturedMusicians().contains(new Musician(featuredMusician));
+            if (matchGenre && featured)
+                filteredAlbums.add(album);
+        }
+
+        // Case where size of all albums <= k
+        if (filteredAlbums.size() <= k)
+            return Lists.newArrayList(filteredAlbums);
+
+        // size of all albums > k
+        List<Album> answer = Lists.newArrayList();
+        Iterator<Album> it = filteredAlbums.iterator();
+        for (int i = 0; i < k; i++) {
+            Album toAdd = it.next();
+            if (toAdd.getGenre().equals(genre))
+                answer.add(toAdd);
         }
         return answer;
     }
@@ -323,33 +289,27 @@ public class ECMMiner {
      * This method returns an individual musicians top k rated albums of all time
      *
      * @Param k is the amount of albums to be returned
-     * @Param musicianName is the name of the musician whos albums you want to return
+     * @Param featuredMusician is the name of the musician participated in the album.
      */
-    public List<Album> musiciansHighestRatedAlbums(String musicianName, int k){
-        Collection<Album> albums = dao.loadAll(Album.class);
-        ArrayList<Album> musiciansAlbums = new ArrayList<>();
-        ArrayList<Album> answer = new ArrayList<>();
+    public List<Album> musiciansHighestRatedAlbums(String featuredMusician, int k) {
+        if (k <= 0 || featuredMusician == null || featuredMusician.isEmpty())
+            return Lists.newArrayList();
 
-        for(Album album: albums){
-            for(int i = 0; i < album.getFeaturedMusicians().size(); i++){
-            if(album.getFeaturedMusicians().get(i).getName().equals(musicianName)){
-                    musiciansAlbums.add(album);
-                }
-            }
+        Collection<Album> albums = dao.loadAll(Album.class);
+        List<Album> filteredAlbums = Lists.newArrayList();
+        for (Album album : albums) {
+            if (album.getFeaturedMusicians().contains(new Musician(featuredMusician)))
+                filteredAlbums.add(album);
         }
-        for(int i = 0; i < k; i++){
-            double highestRating = 0;
-            for (Album musAlbum : musiciansAlbums) {
-                if (musAlbum.getRating() > highestRating && !answer.contains(musAlbum)) {
-                    highestRating = musAlbum.getRating();
-                }
-            }
-            for (Album musAlbum : musiciansAlbums) {
-                if (musAlbum.getRating() == highestRating) {
-                    answer.add(musAlbum);
-                }
-            }
-        }
-        return answer;
+        filteredAlbums.sort((a1, a2) -> {
+            if (a2.getRating() > a1.getRating())
+                return 1;
+            else
+                return -1;
+        });
+
+        if (filteredAlbums.size() <= k)
+            return filteredAlbums;
+        return filteredAlbums.subList(0, k);
     }
 }
