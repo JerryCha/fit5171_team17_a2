@@ -21,9 +21,6 @@ import static org.mockito.Mockito.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * TODO: perform unit testing on the ECMMiner class, by making use of mocking.
- */
 class ECMMinerUnitTest {
     private DAO dao;
     private ECMMiner ecmMiner;

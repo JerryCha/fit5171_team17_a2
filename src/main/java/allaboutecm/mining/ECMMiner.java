@@ -5,8 +5,8 @@ import allaboutecm.model.Album;
 import allaboutecm.model.Musician;
 import allaboutecm.model.MusicianInstrument;
 import com.google.common.collect.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -15,7 +15,7 @@ import java.util.*;
  * Note that you can extend the Neo4jDAO class to make implementing this class easier.
  */
 public class ECMMiner {
-    private static Logger logger = LoggerFactory.getLogger(ECMMiner.class);
+//    private static Logger logger = LoggerFactory.getLogger(ECMMiner.class);
 
     private final DAO dao;
 
@@ -116,7 +116,7 @@ public class ECMMiner {
 
         List<Integer> countValueList = Lists.newArrayList();
         countValueList.addAll(instrumentCounts.values());
-        countValueList.sort((i1, i2) -> { if (i2-i1 > 0) return 1; return -1; });
+        countValueList.sort((i1, i2) -> i2 > i1 ? 1 : -1 );
         Set<Integer> topKValues = Sets.newHashSet();
         int idx = 0;
         while (topKValues.size() < k) {
@@ -142,8 +142,6 @@ public class ECMMiner {
      *
      * @Param k the number of musicians to be returned.
      */
-    //Musician musician: album.getFeaturedMusicians())
-
     public List<Musician> mostSocialMusicians(int k) {
         if (k <= 0)
             throw new IllegalArgumentException("The input number of k can not less than or equal to zero");
@@ -177,6 +175,52 @@ public class ECMMiner {
                     answer.add(socialMusician.get(d));
                 }
             }
+        }
+        return answer;
+    }
+
+    public List<Musician> mostSocialMusicians2(int k) {
+        if (k <= 0)
+            throw new IllegalArgumentException("The input number of k can not less than or equal to zero");
+
+        Collection<Musician> musicians = dao.loadAll(Musician.class);
+
+        if (musicians.size() <= k) {
+            List<Musician> answer = Lists.newArrayList();
+            answer.addAll(musicians);
+
+            return answer;
+        }
+
+        HashMap<Musician, Set<Musician>> musicianFeatures = Maps.newHashMap();
+
+        for (Musician musician : musicians) {
+            Set<Album> albums = musician.getAlbums();
+            Set<Musician> collaborateMusicians = musicianFeatures.getOrDefault(musician, Sets.newHashSet());
+            for (Album album : albums) {
+                List<Musician> featuredMusicians = album.getFeaturedMusicians();
+                for (Musician featuredMusician : featuredMusicians) {
+                    if (!collaborateMusicians.contains(featuredMusician))
+                        collaborateMusicians.add(featuredMusician);
+                }
+            }
+            musicianFeatures.put(musician, collaborateMusicians);
+        }
+
+        ArrayList<Integer> countList = Lists.newArrayList();
+        for (Map.Entry<Musician, Set<Musician>> entry : musicianFeatures.entrySet()) {
+            int musiciansCount = entry.getValue().size();
+            if (!countList.contains(musiciansCount))
+                countList.add(musiciansCount);
+        }
+        countList.sort((i1, i2) -> i1-i2 > 0 ? -1 : 1);
+        int maxVal = countList.get(0);
+        int minVal = countList.get(k-1);
+        List<Musician> answer = Lists.newArrayList();
+        for (Map.Entry<Musician, Set<Musician>> entry : musicianFeatures.entrySet()) {
+            int musiciansCount = entry.getValue().size();
+            if (musiciansCount >= minVal && musiciansCount <= maxVal)
+                answer.add(entry.getKey());
         }
         return answer;
     }

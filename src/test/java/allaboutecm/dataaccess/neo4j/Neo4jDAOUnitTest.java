@@ -2,6 +2,7 @@ package allaboutecm.dataaccess.neo4j;
 
 import allaboutecm.dataaccess.DAO;
 import allaboutecm.model.Album;
+import allaboutecm.model.MusicalInstrument;
 import allaboutecm.model.Musician;
 import allaboutecm.model.MusicianInstrument;
 import com.google.common.collect.Sets;
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
-import org.neo4j.ogm.support.FileUtils;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -20,10 +21,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * TODO: add test cases to adequately test the Neo4jDAO class.
@@ -97,8 +99,6 @@ class Neo4jDAOUnitTest {
         assertEquals(musician.getMusicianUrl(), loadedMusician.getMusicianUrl());
         assertEquals(1, dao.loadAll(Musician.class).size());
 
-//        dao.delete(musician);
-//        assertEquals(0, dao.loadAll(Musician.class).size());
     }
 
     /**
@@ -139,29 +139,50 @@ class Neo4jDAOUnitTest {
         dao.createOrUpdate(album);
         dao.createOrUpdate(musician);
 
-        Collection<Musician> musicians = dao.loadAll(Musician.class); //collection of the musicians
-        assertEquals(1, musicians.size());             //only one musician in musicians collection
+        Collection<Musician> musicians = dao.loadAll(Musician.class); // collection of the musicians
+        assertEquals(1, musicians.size());             // only one musician in musicians collection
         Musician loadedMusician = musicians.iterator().next();
-        assertEquals(musician.getAlbums(), loadedMusician.getAlbums());     //test empty album
-        assertEquals(0, loadedMusician.getAlbums().size());     //test empty album
+        assertEquals(musician.getAlbums(), loadedMusician.getAlbums());     // test empty album
+        assertEquals(0, loadedMusician.getAlbums().size());     // test empty album
 
-        musician.setAlbums(Sets.newHashSet(album));   //set the album of the musician
-        assertEquals(musician.getAlbums(), loadedMusician.getAlbums());     //test case for reading of album of a musician
-        assertEquals(1, loadedMusician.getAlbums().size());     //test empty album
+        musician.setAlbums(Sets.newHashSet(album));   // set the album of the musician
+        assertEquals(musician.getAlbums(), loadedMusician.getAlbums());     // test case for reading of album of a musician
+        assertEquals(1, loadedMusician.getAlbums().size());     // test empty album
 
-//        assertEquals(musician, loadedMusician);
-//        assertEquals(musician.getMusicianUrl(), loadedMusician.getMusicianUrl());
-//        assertEquals(musician.getAlbums(), loadedMusician.getAlbums());     //get the albums from the musician
-//        assertEquals(album.getReleaseYear(), loadedMusician.getAlbums().iterator().next().getReleaseYear());
-//        assertEquals(album.getAlbumName(), loadedMusician.getAlbums().iterator().next().getAlbumName());
-//        assertEquals(album.getRecordNumber(), loadedMusician.getAlbums().iterator().next().getRecordNumber());
-//        assertEquals(album.getFeaturedMusicians(),loadedMusician.getAlbums().iterator().next().getFeaturedMusicians());
-//        assertEquals(album.getAlbumURL(),loadedMusician.getAlbums().iterator().next().getAlbumURL());
-//        assertEquals(album.getInstruments(),loadedMusician.getAlbums().iterator().next().getInstruments());
-//        assertEquals(album.getTracks(),loadedMusician.getAlbums().iterator().next().getTracks());
-
+        // Testing findAlbumByYearNumberName
+        Album anotherAlbumTest = dao.findAlbumByYearNumberName(1975, "ECM 1064/65", "The Köln Concert");
+        assertEquals(album, anotherAlbumTest);
     }
 
+    /**
+     * Read MusicalInstrument
+     */
+    @Test
+    public void successfulReadOfMusicalInstrument() {
+        MusicalInstrument m1 = new MusicalInstrument("Piano");
+        MusicalInstrument m2 = new MusicalInstrument("Violin");
+        MusicalInstrument m3 = new MusicalInstrument("Guitar");
+
+        // Insert to neo4j for read
+        dao.createOrUpdate(m1);
+        dao.createOrUpdate(m2);
+        dao.createOrUpdate(m3);
+
+        // Read by loadAll
+        Collection<MusicalInstrument> instruments = dao.loadAll(MusicalInstrument.class);
+        assertEquals(3, instruments.size());
+        assertTrue(instruments.contains(m1));
+        assertTrue(instruments.contains(m2));
+        assertTrue(instruments.contains(m3));
+
+        // Read by findMusicalInstrumentByName
+        // Existed
+        MusicalInstrument fetchedInstrument = dao.findMusicalInstrumentByName("Piano");
+        assertEquals(m1, fetchedInstrument);
+        // Not existed
+        MusicalInstrument fetchedInstrument2 = dao.findMusicalInstrumentByName("Keyboard");
+        assertEquals(null, fetchedInstrument2);
+    }
 
     /**
      * Read of Musician
@@ -303,12 +324,11 @@ class Neo4jDAOUnitTest {
         musician.setMusicianUrl(new URL("https://www.keithjarrett.org/"));
        // musician.setAlbums(Collections.singleton(new Album(1975, "ECM 1064/65", "The Köln Concert")));
 
-        //dao.findMusicianByName("Keith Jarrett");
         dao.createOrUpdate(musician);
        // Musician testMusician = dao.load(Musician.class, musician.getId());
-        Musician musician2= dao.findMusicianByName("Keith Jarrett");   //find the musician by name
-        Musician musician3= dao.findMusicianByName("Keith");   //find the not exist musician
-        assertEquals(musician,musician2);
-        assertEquals(null,musician3);
+        Musician musician2 = dao.findMusicianByName("Keith Jarrett");   //find the musician by name
+        Musician musician3 = dao.findMusicianByName("Keith");   //find the not exist musician
+        assertEquals(musician, musician2);
+        assertEquals(null, musician3);
     }
 }
