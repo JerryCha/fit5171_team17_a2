@@ -70,10 +70,20 @@ class MusicianInstrumentUnitTest {
         MusicianInstrument musicianInstrument1 =new MusicianInstrument(new Musician("kelvin"), Sets.newHashSet(new MusicalInstrument("Piano")));
         MusicianInstrument musicianInstrument2 =new MusicianInstrument(new Musician("Jane"), Sets.newHashSet(new MusicalInstrument("Piano")));
         MusicianInstrument musicianInstrument3 =new MusicianInstrument(new Musician("Jane"), Sets.newHashSet(new MusicalInstrument("Violin")));
+        // Comparing with itself
+        assertTrue(musicianInstrument1.equals(musicianInstrument1));
+        // Comparing with another
         assertEquals(musicianInstrument, musicianInstrument1);
         assertTrue(musicianInstrument.equals(musicianInstrument1));
         assertFalse(musicianInstrument.equals(musicianInstrument2));
         assertFalse(musicianInstrument.equals(musicianInstrument3));
+    }
+
+    @Test
+    @DisplayName("should return false if comparing with null or instance of another class")
+    public void shouldReturnFalseIfComparingWithNullOrInstanceOfAnotherClass() {
+        assertFalse(musicianInstrument.equals(null));
+        assertFalse(musicianInstrument.equals(new Musician("foo")));
     }
 
     /**

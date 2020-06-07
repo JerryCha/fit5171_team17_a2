@@ -11,9 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MusicianUnitTest {
     private Musician musician;
@@ -134,5 +132,17 @@ public class MusicianUnitTest {
         boolean group = Boolean.parseBoolean(arg);
         musician.setGroup(group);
         assertEquals(group, musician.getGroup());
+    }
+
+    // Supplementary testing for equals
+    @Test
+    public void shouldReturnFalseIfComparingWithNullOrInstanceOfAnotherClass() {
+        assertFalse(musician.equals(null));
+        assertFalse(musician.equals(new MusicalInstrument("Piano")));
+    }
+
+    @Test
+    public void shouldReturnTrueIfComparingWithItself() {
+        assertTrue(musician.equals(musician));
     }
 }

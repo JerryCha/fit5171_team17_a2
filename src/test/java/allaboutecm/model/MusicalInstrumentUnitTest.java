@@ -40,6 +40,13 @@ public class MusicalInstrumentUnitTest {
     // Test equal
 
     @Test
+    @DisplayName("Should return true if compare with itself")
+    public void shouldReturnTrueIfCompareWithItself() {
+        this.musicalInstrument.setName("Piano");
+        assertTrue(this.musicalInstrument.equals(this.musicalInstrument));
+    }
+
+    @Test
     @DisplayName("Should return true if given two instance with the same name.")
     public void shouldReturnTrueIfGivenTwoInstanceWithSameName() {
         final String name = "Guitar";
@@ -50,7 +57,7 @@ public class MusicalInstrumentUnitTest {
     }
 
     @Test
-    @DisplayName("Should return true if given two instances with different name.")
+    @DisplayName("Should return false if given two instances with different name.")
     public void shouldReturnTrueIfGivenTwoInstancesWithDifferentName() {
         final String name = "Guitar";
         final String name2 = "Piano";
@@ -58,5 +65,13 @@ public class MusicalInstrumentUnitTest {
         this.musicalInstrument.setName(name);
         that.setName(name2);
         assertFalse(this.musicalInstrument.equals(that));
+    }
+
+    @Test
+    @DisplayName("Should return false if given null or instance of another class")
+    public void shouldReturnFalseIfGivenNullOrInstanceOfAnotherClass() {
+        this.musicalInstrument.setName("Piano");
+        assertFalse(this.musicalInstrument.equals(null));
+        assertFalse(this.musicalInstrument.equals(new Musician("foo")));
     }
 }

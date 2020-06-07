@@ -14,9 +14,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AlbumUnitTest {
     private Album album;
@@ -252,5 +250,28 @@ class AlbumUnitTest {
     public void shouldSetAdditionalInformationGivenNonEmptyString(String arg) {
         album.setAdditionalInformation(arg);
         assertEquals(arg, album.getAdditionalInformation());
+    }
+
+    /**
+     * Test equal
+     */
+    @Test
+    public void shouldReturnTrueIfGivenSameAlbum() {
+        Album anotherAlbum = new Album(1975, "ECM 1064/65", "The Köln Concert");;
+        assertTrue(album.equals(anotherAlbum));
+        // compare with itself
+        assertTrue(album.equals(album));
+    }
+
+    @Test
+    public void shouldReturnFalseIfGivenDifferentAlbum() {
+        Album anotherAlbum = new Album(1975, "ECM 1064/66", "The different world");
+        assertFalse(album.equals(anotherAlbum));
+    }
+
+    @Test
+    public void shouldReturnFalseIfGivenNullOrDifferentClassOfInstance() {
+        assertFalse(album.equals(null));
+        assertFalse(album.equals(new Musician("foo")));
     }
 }
